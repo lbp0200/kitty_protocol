@@ -135,4 +135,55 @@ void main() {
       expect(flags.isExtendedMode, isFalse);
     });
   });
+
+  group('KittyEncoder', () {
+    test('encode simple key produces correct sequence', () {
+      const encoder = KittyEncoder();
+      const event = SimpleKeyEvent(
+        logicalKey: LogicalKeyboardKey.enter,
+      );
+      final result = encoder.encode(event);
+      expect(result, equals('\x1b[28;1u'));
+    });
+
+    test('encode Ctrl+Enter produces correct sequence', () {
+      const encoder = KittyEncoder();
+      const event = SimpleKeyEvent(
+        logicalKey: LogicalKeyboardKey.enter,
+        modifiers: {SimpleModifier.control},
+      );
+      final result = encoder.encode(event);
+      expect(result, equals('\x1b[13;5u'));
+    });
+
+    test('encode Shift+Tab produces correct sequence', () {
+      const encoder = KittyEncoder();
+      const event = SimpleKeyEvent(
+        logicalKey: LogicalKeyboardKey.tab,
+        modifiers: {SimpleModifier.shift},
+      );
+      final result = encoder.encode(event);
+      expect(result, equals('\x1b[9;2u'));
+    });
+
+    test('encode F1 produces correct sequence', () {
+      const encoder = KittyEncoder();
+      const event = SimpleKeyEvent(
+        logicalKey: LogicalKeyboardKey.f1,
+      );
+      final result = encoder.encode(event);
+      expect(result, equals('\x1b[11;1u'));
+    });
+
+    test('encode with extended mode uses CSI > format', () {
+      const encoder = KittyEncoder(
+        flags: KittyEncoderFlags(reportEvent: true),
+      );
+      const event = SimpleKeyEvent(
+        logicalKey: LogicalKeyboardKey.enter,
+      );
+      final result = encoder.encode(event);
+      expect(result, startsWith('\x1b[>'));
+    });
+  });
 }
