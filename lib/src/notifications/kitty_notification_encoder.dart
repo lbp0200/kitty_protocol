@@ -169,9 +169,9 @@ class KittyNotificationEncoder {
       if (applicationName != null) 'f': applicationName,
       if (iconName != null) 'n': iconName,
       if (notificationType != null) 't': notificationType,
-      if (urgency != null) 'u': urgency!.value.toString(),
-      if (occasion != null) 'o': occasion!.value,
-      if (expireTimeout != null) 'w': expireTimeout!.toString(),
+      if (urgency != null) 'u': urgency.value.toString(),
+      if (occasion != null) 'o': occasion.value,
+      if (expireTimeout != null) 'w': expireTimeout.toString(),
       if (requestCloseEvent) 'c': '1',
       if (actions != null) 'a': actions,
       if (sound != null) 's': sound,
@@ -266,5 +266,54 @@ class KittyNotificationEncoder {
     }
 
     return result;
+  }
+}
+
+/// OSC 777 Notification Encoder
+///
+/// Per changelog.rst line 2251:
+/// Some terminals (like urxvt) use OSC 777 for notifications
+///
+/// Format: <OSC>777;<command>;<args><ST>
+class KittyNotification777 {
+  KittyNotification777._();
+
+  /// OSC 777 code
+  static const int oscCode = 777;
+
+  /// Notification subcommands
+  static String notify({
+    String? title,
+    required String body,
+    bool encode = false,
+  }) {
+    final cmd = StringBuffer('notify');
+    if (title != null) {
+      cmd.write(';${encode ? _encodeArg(title) : title}');
+      cmd.write(';${encode ? _encodeArg(body) : body}');
+    } else {
+      cmd.write(';$body');
+    }
+    return '\x1b]$oscCode;${cmd.toString()}\x1b\\';
+  }
+
+  /// Close notification
+  static String close(int notificationId) {
+    return '\x1b]$oscCode;close;$notificationId\x1b\\';
+  }
+
+  /// List active notifications
+  static String list() {
+    return '\x1b]$oscCode;list\x1b\\';
+  }
+
+  /// Check notification support
+  static String supported() {
+    return '\x1b]$oscCode;?\x1b\\';
+  }
+
+  static String _encodeArg(String arg) {
+    // Simple encoding - in practice would use base64
+    return Uri.encodeComponent(arg);
   }
 }

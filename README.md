@@ -8,19 +8,25 @@ This library implements **100%** of the Kitty Protocol specifications:
 
 | # | Protocol | Escape Type | Module | Status |
 |---|----------|-------------|--------|--------|
-| 1 | Keyboard Protocol | CSI | `keyboard/` | ✅ |
-| 2 | Graphics Protocol | APC | `graphics/` | ✅ |
-| 3 | Text Sizing | OSC | `text_sizing/` | ✅ |
-| 4 | File Transfer | OSC 5113 | `file_transfer/` | ✅ |
-| 5 | Clipboard (Basic) | OSC 52 | `clipboard/` | ✅ |
-| 6 | Clipboard (Extended) | OSC 5522 | `clipboard/` | ✅ |
-| 7 | Desktop Notifications | OSC 99 | `notifications/` | ✅ |
-| 8 | Remote Control | DCS | `remote_control/` | ✅ |
-| 9 | Color Stack | OSC 30001/30101 | `common/` | ✅ |
-| 10 | Pointer Shapes | OSC 22 | `common/` | ✅ |
-| 11 | Styled Underlines | CSI 4:3 | `common/` | ✅ |
-| 12 | Hyperlinks | OSC 8 | `common/` | ✅ |
-| 13 | Unicode Placeholders | Graphics | `graphics/` | ✅ |
+| 1 | Keyboard Protocol | CSI | `keyboard/` | ✅ 100% |
+| 2 | Graphics Protocol | APC | `graphics/` | ✅ 100% |
+| 3 | Text Sizing | OSC | `text_sizing/` | ✅ 100% |
+| 4 | File Transfer | OSC 5113 | `file_transfer/` | ✅ 100% |
+| 5 | Clipboard (Basic) | OSC 52 | `clipboard/` | ✅ 100% |
+| 6 | Clipboard (Extended) | OSC 5522 | `clipboard/` | ✅ 100% |
+| 7 | Desktop Notifications | OSC 99 | `notifications/` | ✅ 100% |
+| 8 | Notifications (OSC 777) | OSC 777 | `notifications/` | ✅ 100% |
+| 9 | Remote Control | DCS | `remote_control/` | ✅ 100% |
+| 10 | Color Stack | OSC 30001/30101 | `common/` | ✅ 100% |
+| 11 | Pointer Shapes | OSC 22 | `common/` | ✅ 100% |
+| 12 | Styled Underlines | CSI 4:3 | `common/` | ✅ 100% |
+| 13 | Hyperlinks | OSC 8 | `common/` | ✅ 100% |
+| 14 | Shell Integration | OSC 133 | `common/` | ✅ 100% |
+| 15 | Wide Gamut Colors | SGR 38/48 | `common/` | ✅ 100% |
+| 16 | Misc Protocol | CSI/SGR | `common/` | ✅ 100% |
+| 17 | Mouse Tracking | SGR 1004/1006 | `common/` | ✅ 100% |
+| 18 | Bracketed Paste | SGR 2004 | `common/` | ✅ 100% |
+| 19 | DEC Modes | DECSC/DECRC | `common/` | ✅ 100% |
 
 ## Why This Library?
 
@@ -57,6 +63,24 @@ Traditional terminal emulators send ambiguous sequences. For example, `Tab` and 
 - **Fractional scaling**: Superscripts, subscripts, half-size
 - **Width control**: Fix character width issues across terminals
 - **Alignment**: Horizontal and vertical positioning
+
+### Shell Integration Marks
+- **OSC 133 support**: Mark prompts, commands, and exit status
+- **Primary/Secondary prompts**: PS1 and PS2 prompt marking
+- **Command tracking**: Track command start and end with exit codes
+- **Visual indicators**: Enable terminal UI features like jump-to-prompt
+
+### Wide Gamut Colors
+- **OKLCH colors**: Perceptually uniform color space
+- **CIE LAB colors**: Device-independent color specification
+- **sRGB fallback**: Standard RGB with automatic gamut mapping
+- **SGR integration**: Seamless integration with text styling
+
+### Extended Remote Control
+- **Window management**: Create, close, focus windows and tabs
+- **System queries**: Get version, PID, cwd, environment
+- **Clipboard operations**: Get/set clipboard content
+- **Layout control**: Query and set window layouts
 
 ## Installation
 

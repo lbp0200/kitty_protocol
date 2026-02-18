@@ -50,6 +50,9 @@ export 'src/common/kitty_underline.dart';
 export 'src/common/kitty_pointer_shapes.dart';
 export 'src/common/kitty_color_stack.dart';
 export 'src/common/kitty_hyperlinks.dart';
+export 'src/common/kitty_shell_integration.dart';
+export 'src/common/kitty_wide_gamut_colors.dart';
+export 'src/common/kitty_misc_protocol.dart';
 
 // Remote control exports
 export 'src/remote_control/kitty_remote_control_encoder.dart';
