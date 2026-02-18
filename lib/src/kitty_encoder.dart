@@ -4,6 +4,8 @@ import 'kitty_modifier_codes.dart';
 import 'kitty_flags.dart';
 
 /// Event types per Kitty Keyboard Protocol
+///
+/// Reference: doc/kitty/docs/keyboard-protocol.rst lines 217-234
 enum KittyEventType {
   /// Key down event (type 1)
   keyDown(1),
@@ -49,6 +51,15 @@ enum SimpleModifier {
 /// Kitty Encoder - converts Flutter KeyEvent to Kitty escape sequences
 ///
 /// Supports both [KeyEvent] from Flutter and [SimpleKeyEvent] for testing.
+///
+/// Encoding format per Kitty Keyboard Protocol (line 98):
+///   CSI <unicode-key-code> ; <modifiers> u
+///
+/// Example:
+///   Enter key: \x1b[13;1u
+///   Ctrl+Enter: \x1b[13;5u (13=Enter codepoint, 5=1+4 for Ctrl)
+///   Ctrl+a: \x1b[1;5u (1=C0 code for Ctrl+a, 5=1+4 for Ctrl)
+///   Ctrl+Shift+A: \x1b[65;6u (65=A uppercase, 6=1+4+1 for Ctrl+Shift)
 class KittyEncoder {
   final KittyEncoderFlags flags;
 
@@ -75,15 +86,14 @@ class KittyEncoder {
       }
     }
 
-    // Apply modifier-specific key code offset per Kitty protocol
-    int effectiveKeyCode = keyCode;
-    if (modifierFlags & KittyModifierCodes.ctrl != 0) {
-      effectiveKeyCode -= 15; // Ctrl offsets key code by -15
-    } else if (modifierFlags & KittyModifierCodes.shift != 0) {
-      effectiveKeyCode -= 20; // Shift offsets key code by -20
-    } else if (modifierFlags & KittyModifierCodes.alt != 0) {
-      effectiveKeyCode -= 10; // Alt offsets key code by -10
-    }
+    // Apply C0 control code mapping for Ctrl modifier
+    // Per Kitty protocol lines 684-706:
+    // - Ctrl+letter maps to C0 control codes (1-26 for a-z)
+    // - If Shift is also pressed, DON'T apply C0 mapping (use base codepoint)
+    // - Keys not in mapping table remain unchanged
+    final bool hasCtrl = (modifierFlags & KittyModifierCodes.ctrl) != 0;
+    final bool hasShift = (modifierFlags & KittyModifierCodes.shift) != 0;
+    final int effectiveKeyCode = KittyKeyCodes.applyCtrlMapping(keyCode, hasCtrl, hasShift);
 
     // Build the escape sequence
     String sequence;

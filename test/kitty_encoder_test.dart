@@ -67,21 +67,21 @@ void main() {
     });
 
     test('Enter has correct code', () {
-      expect(KittyKeyCodes.enter, equals(28));
+      expect(KittyKeyCodes.enter, equals(13));
     });
 
     test('Tab has correct code', () {
-      expect(KittyKeyCodes.tab, equals(29));
+      expect(KittyKeyCodes.tab, equals(9));
     });
 
     test('Escape has correct code', () {
-      expect(KittyKeyCodes.escape, equals(53));
+      expect(KittyKeyCodes.escape, equals(27));
     });
 
     test('getKeyCode returns correct code for LogicalKeyboardKey', () {
       expect(KittyKeyCodes.getKeyCode(LogicalKeyboardKey.f1), equals(11));
-      expect(KittyKeyCodes.getKeyCode(LogicalKeyboardKey.enter), equals(28));
-      expect(KittyKeyCodes.getKeyCode(LogicalKeyboardKey.tab), equals(29));
+      expect(KittyKeyCodes.getKeyCode(LogicalKeyboardKey.enter), equals(13));
+      expect(KittyKeyCodes.getKeyCode(LogicalKeyboardKey.tab), equals(9));
     });
 
     test('getKeyCode returns null for unmapped keys', () {
@@ -153,7 +153,7 @@ void main() {
         logicalKey: LogicalKeyboardKey.enter,
       );
       final result = encoder.encode(event);
-      expect(result, equals('\x1b[28;1u'));
+      expect(result, equals('\x1b[13;1u'));
     });
 
     test('encode Ctrl+Enter produces correct sequence', () {
@@ -163,6 +163,8 @@ void main() {
         modifiers: {SimpleModifier.control},
       );
       final result = encoder.encode(event);
+      // Per Kitty protocol: Enter (13) with Ctrl (modifier=5) -> CSI 13;5u
+      // Ctrl+Enter keeps codepoint 13, modifier is 1+4=5
       expect(result, equals('\x1b[13;5u'));
     });
 
@@ -173,6 +175,8 @@ void main() {
         modifiers: {SimpleModifier.shift},
       );
       final result = encoder.encode(event);
+      // Per Kitty protocol: Tab (9) with Shift (modifier=2) -> CSI 9;2u
+      // Shift modifier is 1+1=2, codepoint stays at 9
       expect(result, equals('\x1b[9;2u'));
     });
 
@@ -226,6 +230,8 @@ void main() {
         modifiers: {SimpleModifier.control, SimpleModifier.shift},
       );
       final result = encoder.encode(event);
+      // Per Kitty protocol: When Shift is pressed with Ctrl, don't apply C0 mapping
+      // Use Enter codepoint 13, modifier is 1+4+1=6 (Ctrl+Shift)
       expect(result, equals('\x1b[13;6u'));
     });
 
@@ -249,17 +255,17 @@ void main() {
 
     test('encode Escape produces correct sequence', () {
       const encoder = KittyEncoder();
-      expect(encoder.encode(const SimpleKeyEvent(logicalKey: LogicalKeyboardKey.escape)), equals('\x1b[53;1u'));
+      expect(encoder.encode(const SimpleKeyEvent(logicalKey: LogicalKeyboardKey.escape)), equals('\x1b[27;1u'));
     });
 
     test('encode Backspace produces correct sequence', () {
       const encoder = KittyEncoder();
-      expect(encoder.encode(const SimpleKeyEvent(logicalKey: LogicalKeyboardKey.backspace)), equals('\x1b[27;1u'));
+      expect(encoder.encode(const SimpleKeyEvent(logicalKey: LogicalKeyboardKey.backspace)), equals('\x1b[127;1u'));
     });
 
     test('encode Space produces correct sequence', () {
       const encoder = KittyEncoder();
-      expect(encoder.encode(const SimpleKeyEvent(logicalKey: LogicalKeyboardKey.space)), equals('\x1b[44;1u'));
+      expect(encoder.encode(const SimpleKeyEvent(logicalKey: LogicalKeyboardKey.space)), equals('\x1b[32;1u'));
     });
 
     test('encode Delete produces correct sequence', () {
@@ -303,8 +309,8 @@ void main() {
       );
       final result = encoder.encode(event);
       // Format: \x1b[>flags;event_type;key;modifiersu
-      // event_type 1 = keyDown
-      expect(result, equals('\x1b[>1;1;28;1u'));
+      // event_type 1 = keyDown, Enter = 13
+      expect(result, equals('\x1b[>1;1;13;1u'));
     });
 
     test('encode key repeat in extended mode includes event_type 2', () {
@@ -318,8 +324,8 @@ void main() {
       );
       final result = encoder.encode(event);
       // Format: \x1b[>flags;event_type;key;modifiersu
-      // event_type 2 = keyRepeat
-      expect(result, equals('\x1b[>1;2;28;1u'));
+      // event_type 2 = keyRepeat, Enter = 13
+      expect(result, equals('\x1b[>1;2;13;1u'));
     });
 
     test('encode key up in extended mode includes event_type 3', () {
@@ -332,8 +338,8 @@ void main() {
       );
       final result = encoder.encode(event);
       // Format: \x1b[>flags;event_type;key;modifiersu
-      // event_type 3 = keyUp
-      expect(result, equals('\x1b[>1;3;28;1u'));
+      // event_type 3 = keyUp, Enter = 13
+      expect(result, equals('\x1b[>1;3;13;1u'));
     });
 
     test('encode key up in non-extended mode uses ~ prefix', () {
@@ -343,7 +349,8 @@ void main() {
         isKeyUp: true,
       );
       final result = encoder.encode(event);
-      expect(result, equals('\x1b[28;1u'));
+      // Enter = 13
+      expect(result, equals('\x1b[13;1u'));
     });
 
     test('encode key repeat in non-extended mode has no special handling', () {
@@ -353,8 +360,8 @@ void main() {
         isKeyRepeat: true,
       );
       final result = encoder.encode(event);
-      // Key repeat is treated as key down in non-extended mode
-      expect(result, equals('\x1b[28;1u'));
+      // Key repeat is treated as key down in non-extended mode, Enter = 13
+      expect(result, equals('\x1b[13;1u'));
     });
 
     // Backspace Tests
@@ -362,7 +369,8 @@ void main() {
       const encoder = KittyEncoder();
       const event = SimpleKeyEvent(logicalKey: LogicalKeyboardKey.backspace);
       final result = encoder.encode(event);
-      expect(result, equals('\x1b[27;1u'));
+      // Backspace = 127
+      expect(result, equals('\x1b[127;1u'));
     });
 
     test('encode Backspace in extended mode produces correct sequence', () {
@@ -371,8 +379,8 @@ void main() {
       );
       const event = SimpleKeyEvent(logicalKey: LogicalKeyboardKey.backspace);
       final result = encoder.encode(event);
-      // Backspace code is 27, event_type 1 = keyDown
-      expect(result, equals('\x1b[>1;1;27;1u'));
+      // Backspace code is 127, event_type 1 = keyDown
+      expect(result, equals('\x1b[>1;1;127;1u'));
     });
 
     // IME/Text Editing Conflict Tests
@@ -409,6 +417,7 @@ void main() {
         modifiers: {SimpleModifier.control},
       );
       final result = encoder.encode(event);
+      // Per Kitty protocol: Enter (13) with Ctrl (modifier=5) -> CSI 13;5u
       expect(result, equals('\x1b[13;5u'));
     });
 
