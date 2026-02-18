@@ -1,6 +1,6 @@
 name: kitty_key_encoder
 description: Encode Flutter KeyEvent to Kitty Keyboard Protocol escape sequences.
-version: 1.0.0
+version: 1.1.0
 homepage: https://github.com/lbp0200/kitty_key_encoder
 
 environment:
