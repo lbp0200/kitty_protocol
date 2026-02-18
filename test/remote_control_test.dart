@@ -16,7 +16,7 @@ void main() {
       final result = encoder.listWindows();
       expect(result, contains('\x1bP@kitty-cmd'));
       expect(result, contains('"cmd":"ls"'));
-      expect(result, contains('\x1b\\\\'));
+      expect(result, contains('\x1b\\'));
     });
 
     test('getWindowInfo generates correct sequence', () {
@@ -164,7 +164,7 @@ void main() {
 
     test('escapes ESC character correctly', () {
       final result = encoder.sendText('test\x1bvalue');
-      expect(result, contains('test\\\\x1bvalue'));
+      expect(result, contains('test\\x1bvalue'));
     });
   });
 

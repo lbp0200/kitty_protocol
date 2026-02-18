@@ -294,7 +294,7 @@ class KittyFileTransferEncoder {
     final result = <String, String>{};
 
     // Parse key=value pairs (separated by ;)
-    final pairs = content.split(' ; ');
+    final pairs = content.split(';');
     for (final pair in pairs) {
       final idx = pair.indexOf('=');
       if (idx > 0) {

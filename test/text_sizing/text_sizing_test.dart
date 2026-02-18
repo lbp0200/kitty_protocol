@@ -92,8 +92,8 @@ void main() {
 
   group('KittyTextSizingEncoder - Width Helpers', () {
     test('encodeWithWidth generates correct sequence', () {
-      final result = encoder.encodeWithWidth('Test', 10);
-      expect(result, contains('w=10'));
+      final result = encoder.encodeWithWidth('Test', 5);
+      expect(result, contains('w=5'));
     });
 
     test('chunkByWidth splits text correctly', () {

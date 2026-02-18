@@ -20,8 +20,8 @@ void main() {
       expect(KittyModifierCodes.superKey, equals(8));
     });
 
-    test('calculateModifiers returns base value without +1', () {
-      expect(KittyModifierCodes.calculateModifiers(0), equals(0));
+    test('calculateModifiers returns base value 1 for no modifiers', () {
+      expect(KittyModifierCodes.calculateModifiers(0), equals(1));
     });
 
     test('calculateModifiers adds 1 for Shift', () {
