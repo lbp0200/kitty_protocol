@@ -1,6 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:kitty_key_encoder/kitty_key_encoder.dart';
+import 'package:kitty_protocol/kitty_protocol.dart';
 
 /// Protocol Compliance Tests
 ///
@@ -21,7 +21,7 @@ void main() {
     ///   0x09 - for Tab
 
     test('Enter key uses Unicode codepoint 13', () {
-      const encoder = KittyEncoder();
+      const encoder = KittyKeyboardEncoder();
       const event = SimpleKeyEvent(logicalKey: LogicalKeyboardKey.enter);
       final result = encoder.encode(event);
       // Enter = 0x0d = 13 in decimal
@@ -29,7 +29,7 @@ void main() {
     });
 
     test('Tab key uses Unicode codepoint 9', () {
-      const encoder = KittyEncoder();
+      const encoder = KittyKeyboardEncoder();
       const event = SimpleKeyEvent(logicalKey: LogicalKeyboardKey.tab);
       final result = encoder.encode(event);
       // Tab = 0x09 = 9 in decimal
@@ -37,7 +37,7 @@ void main() {
     });
 
     test('Escape key uses Unicode codepoint 27', () {
-      const encoder = KittyEncoder();
+      const encoder = KittyKeyboardEncoder();
       const event = SimpleKeyEvent(logicalKey: LogicalKeyboardKey.escape);
       final result = encoder.encode(event);
       // Escape = 0x1b = 27 in decimal
@@ -45,7 +45,7 @@ void main() {
     });
 
     test('Backspace key uses Unicode codepoint 127', () {
-      const encoder = KittyEncoder();
+      const encoder = KittyKeyboardEncoder();
       const event = SimpleKeyEvent(logicalKey: LogicalKeyboardKey.backspace);
       final result = encoder.encode(event);
       // Backspace = 0x7f = 127 in decimal
@@ -53,7 +53,7 @@ void main() {
     });
 
     test('Space key uses Unicode codepoint 32', () {
-      const encoder = KittyEncoder();
+      const encoder = KittyKeyboardEncoder();
       const event = SimpleKeyEvent(logicalKey: LogicalKeyboardKey.space);
       final result = encoder.encode(event);
       // Space = 0x20 = 32 in decimal
@@ -61,7 +61,7 @@ void main() {
     });
 
     test('Delete key uses Unicode codepoint 127', () {
-      const encoder = KittyEncoder();
+      const encoder = KittyKeyboardEncoder();
       const event = SimpleKeyEvent(logicalKey: LogicalKeyboardKey.delete);
       final result = encoder.encode(event);
       expect(result, equals('\x1b[127;1u'));
@@ -74,7 +74,7 @@ void main() {
     /// Examples: Shift=2, Ctrl=5, Ctrl+Shift=6
 
     test('Shift modifier encodes as 2 (1+1)', () {
-      const encoder = KittyEncoder();
+      const encoder = KittyKeyboardEncoder();
       const event = SimpleKeyEvent(
         logicalKey: LogicalKeyboardKey.enter,
         modifiers: {SimpleModifier.shift},
@@ -85,7 +85,7 @@ void main() {
     });
 
     test('Alt modifier encodes as 3 (1+2)', () {
-      const encoder = KittyEncoder();
+      const encoder = KittyKeyboardEncoder();
       const event = SimpleKeyEvent(
         logicalKey: LogicalKeyboardKey.enter,
         modifiers: {SimpleModifier.alt},
@@ -96,7 +96,7 @@ void main() {
     });
 
     test('Ctrl modifier encodes as 5 (1+4)', () {
-      const encoder = KittyEncoder();
+      const encoder = KittyKeyboardEncoder();
       const event = SimpleKeyEvent(
         logicalKey: LogicalKeyboardKey.enter,
         modifiers: {SimpleModifier.control},
@@ -107,7 +107,7 @@ void main() {
     });
 
     test('Ctrl+Shift modifier encodes as 6 (1+4+1)', () {
-      const encoder = KittyEncoder();
+      const encoder = KittyKeyboardEncoder();
       const event = SimpleKeyEvent(
         logicalKey: LogicalKeyboardKey.enter,
         modifiers: {SimpleModifier.control, SimpleModifier.shift},
@@ -118,7 +118,7 @@ void main() {
     });
 
     test('Ctrl+Alt modifier encodes as 7 (1+4+2)', () {
-      const encoder = KittyEncoder();
+      const encoder = KittyKeyboardEncoder();
       const event = SimpleKeyEvent(
         logicalKey: LogicalKeyboardKey.enter,
         modifiers: {SimpleModifier.control, SimpleModifier.alt},
@@ -129,7 +129,7 @@ void main() {
     });
 
     test('Ctrl+Alt+Shift modifier encodes as 8 (1+4+2+1)', () {
-      const encoder = KittyEncoder();
+      const encoder = KittyKeyboardEncoder();
       const event = SimpleKeyEvent(
         logicalKey: LogicalKeyboardKey.enter,
         modifiers: {SimpleModifier.control, SimpleModifier.alt, SimpleModifier.shift},
@@ -140,7 +140,7 @@ void main() {
     });
 
     test('Meta (Super) modifier encodes as 9 (1+8)', () {
-      const encoder = KittyEncoder();
+      const encoder = KittyKeyboardEncoder();
       const event = SimpleKeyEvent(
         logicalKey: LogicalKeyboardKey.enter,
         modifiers: {SimpleModifier.meta},
@@ -215,8 +215,8 @@ void main() {
     /// press=1 (default), repeat=2, release=3
 
     test('Key down event type 1 in extended mode', () {
-      const encoder = KittyEncoder(
-        flags: KittyEncoderFlags(reportEvent: true),
+      const encoder = KittyKeyboardEncoder(
+        flags: KittyKeyboardEncoderFlags(reportEvent: true),
       );
       const event = SimpleKeyEvent(
         logicalKey: LogicalKeyboardKey.enter,
@@ -230,8 +230,8 @@ void main() {
     });
 
     test('Key repeat event type 2 in extended mode', () {
-      const encoder = KittyEncoder(
-        flags: KittyEncoderFlags(reportEvent: true),
+      const encoder = KittyKeyboardEncoder(
+        flags: KittyKeyboardEncoderFlags(reportEvent: true),
       );
       const event = SimpleKeyEvent(
         logicalKey: LogicalKeyboardKey.enter,
@@ -244,8 +244,8 @@ void main() {
     });
 
     test('Key up event type 3 in extended mode', () {
-      const encoder = KittyEncoder(
-        flags: KittyEncoderFlags(reportEvent: true),
+      const encoder = KittyKeyboardEncoder(
+        flags: KittyKeyboardEncoderFlags(reportEvent: true),
       );
       const event = SimpleKeyEvent(
         logicalKey: LogicalKeyboardKey.enter,
@@ -262,8 +262,8 @@ void main() {
     /// For requesting enhancements
 
     test('Extended mode uses CSI > format', () {
-      const encoder = KittyEncoder(
-        flags: KittyEncoderFlags(reportEvent: true),
+      const encoder = KittyKeyboardEncoder(
+        flags: KittyKeyboardEncoderFlags(reportEvent: true),
       );
       const event = SimpleKeyEvent(logicalKey: LogicalKeyboardKey.enter);
       final result = encoder.encode(event);
@@ -271,8 +271,8 @@ void main() {
     });
 
     test('CSI value includes flags', () {
-      const encoder = KittyEncoder(
-        flags: KittyEncoderFlags(reportEvent: true),
+      const encoder = KittyKeyboardEncoder(
+        flags: KittyKeyboardEncoderFlags(reportEvent: true),
       );
       const event = SimpleKeyEvent(logicalKey: LogicalKeyboardKey.enter);
       final result = encoder.encode(event);
@@ -288,77 +288,77 @@ void main() {
     /// except for a few legacy keys
 
     test('F1 uses codepoint 11', () {
-      const encoder = KittyEncoder();
+      const encoder = KittyKeyboardEncoder();
       const event = SimpleKeyEvent(logicalKey: LogicalKeyboardKey.f1);
       final result = encoder.encode(event);
       expect(result, equals('\x1b[11;1u'));
     });
 
     test('F12 uses codepoint 24', () {
-      const encoder = KittyEncoder();
+      const encoder = KittyKeyboardEncoder();
       const event = SimpleKeyEvent(logicalKey: LogicalKeyboardKey.f12);
       final result = encoder.encode(event);
       expect(result, equals('\x1b[24;1u'));
     });
 
     test('ArrowUp uses codepoint 30', () {
-      const encoder = KittyEncoder();
+      const encoder = KittyKeyboardEncoder();
       const event = SimpleKeyEvent(logicalKey: LogicalKeyboardKey.arrowUp);
       final result = encoder.encode(event);
       expect(result, equals('\x1b[30;1u'));
     });
 
     test('ArrowDown uses codepoint 31', () {
-      const encoder = KittyEncoder();
+      const encoder = KittyKeyboardEncoder();
       const event = SimpleKeyEvent(logicalKey: LogicalKeyboardKey.arrowDown);
       final result = encoder.encode(event);
       expect(result, equals('\x1b[31;1u'));
     });
 
     test('ArrowLeft uses codepoint 33', () {
-      const encoder = KittyEncoder();
+      const encoder = KittyKeyboardEncoder();
       const event = SimpleKeyEvent(logicalKey: LogicalKeyboardKey.arrowLeft);
       final result = encoder.encode(event);
       expect(result, equals('\x1b[33;1u'));
     });
 
     test('ArrowRight uses codepoint 32', () {
-      const encoder = KittyEncoder();
+      const encoder = KittyKeyboardEncoder();
       const event = SimpleKeyEvent(logicalKey: LogicalKeyboardKey.arrowRight);
       final result = encoder.encode(event);
       expect(result, equals('\x1b[32;1u'));
     });
 
     test('Home uses codepoint 36', () {
-      const encoder = KittyEncoder();
+      const encoder = KittyKeyboardEncoder();
       const event = SimpleKeyEvent(logicalKey: LogicalKeyboardKey.home);
       final result = encoder.encode(event);
       expect(result, equals('\x1b[36;1u'));
     });
 
     test('End uses codepoint 37', () {
-      const encoder = KittyEncoder();
+      const encoder = KittyKeyboardEncoder();
       const event = SimpleKeyEvent(logicalKey: LogicalKeyboardKey.end);
       final result = encoder.encode(event);
       expect(result, equals('\x1b[37;1u'));
     });
 
     test('PageUp uses codepoint 35', () {
-      const encoder = KittyEncoder();
+      const encoder = KittyKeyboardEncoder();
       const event = SimpleKeyEvent(logicalKey: LogicalKeyboardKey.pageUp);
       final result = encoder.encode(event);
       expect(result, equals('\x1b[35;1u'));
     });
 
     test('PageDown uses codepoint 34', () {
-      const encoder = KittyEncoder();
+      const encoder = KittyKeyboardEncoder();
       const event = SimpleKeyEvent(logicalKey: LogicalKeyboardKey.pageDown);
       final result = encoder.encode(event);
       expect(result, equals('\x1b[34;1u'));
     });
 
     test('Insert uses codepoint 38', () {
-      const encoder = KittyEncoder();
+      const encoder = KittyKeyboardEncoder();
       const event = SimpleKeyEvent(logicalKey: LogicalKeyboardKey.insert);
       final result = encoder.encode(event);
       expect(result, equals('\x1b[38;1u'));
@@ -370,7 +370,7 @@ void main() {
     /// (previous implementation had -2, -11, etc.)
 
     test('Ctrl+Enter produces positive codepoint', () {
-      const encoder = KittyEncoder();
+      const encoder = KittyKeyboardEncoder();
       const event = SimpleKeyEvent(
         logicalKey: LogicalKeyboardKey.enter,
         modifiers: {SimpleModifier.control},
@@ -381,7 +381,7 @@ void main() {
     });
 
     test('Shift+Tab produces positive codepoint', () {
-      const encoder = KittyEncoder();
+      const encoder = KittyKeyboardEncoder();
       const event = SimpleKeyEvent(
         logicalKey: LogicalKeyboardKey.tab,
         modifiers: {SimpleModifier.shift},
@@ -392,7 +392,7 @@ void main() {
     });
 
     test('Alt+Enter produces positive codepoint', () {
-      const encoder = KittyEncoder();
+      const encoder = KittyKeyboardEncoder();
       const event = SimpleKeyEvent(
         logicalKey: LogicalKeyboardKey.enter,
         modifiers: {SimpleModifier.alt},
@@ -403,7 +403,7 @@ void main() {
     });
 
     test('Ctrl+Shift+Enter produces positive codepoint', () {
-      const encoder = KittyEncoder();
+      const encoder = KittyKeyboardEncoder();
       const event = SimpleKeyEvent(
         logicalKey: LogicalKeyboardKey.enter,
         modifiers: {SimpleModifier.control, SimpleModifier.shift},

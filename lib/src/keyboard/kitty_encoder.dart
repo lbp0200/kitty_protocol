@@ -1,3 +1,8 @@
+/// Kitty Keyboard Encoder - Encodes Flutter KeyEvent to Kitty Keyboard Protocol escape sequences
+///
+/// Reference: doc/kitty/docs/keyboard-protocol.rst
+library kitty_protocol_keyboard_encoder;
+
 import 'package:flutter/services.dart';
 import 'kitty_key_codes.dart';
 import 'kitty_modifier_codes.dart';
@@ -48,7 +53,7 @@ enum SimpleModifier {
   meta,
 }
 
-/// Kitty Encoder - converts Flutter KeyEvent to Kitty escape sequences
+/// Kitty Keyboard Encoder - converts Flutter KeyEvent to Kitty escape sequences
 ///
 /// Supports both [KeyEvent] from Flutter and [SimpleKeyEvent] for testing.
 ///
@@ -60,10 +65,10 @@ enum SimpleModifier {
 ///   Ctrl+Enter: \x1b[13;5u (13=Enter codepoint, 5=1+4 for Ctrl)
 ///   Ctrl+a: \x1b[1;5u (1=C0 code for Ctrl+a, 5=1+4 for Ctrl)
 ///   Ctrl+Shift+A: \x1b[65;6u (65=A uppercase, 6=1+4+1 for Ctrl+Shift)
-class KittyEncoder {
-  final KittyEncoderFlags flags;
+class KittyKeyboardEncoder {
+  final KittyKeyboardEncoderFlags flags;
 
-  const KittyEncoder({this.flags = const KittyEncoderFlags()});
+  const KittyKeyboardEncoder({this.flags = const KittyKeyboardEncoderFlags()});
 
   bool get isExtendedMode => flags.isExtendedMode;
 
@@ -161,7 +166,7 @@ class KittyEncoder {
     return flags;
   }
 
-  KittyEncoder withFlags(KittyEncoderFlags newFlags) {
-    return KittyEncoder(flags: newFlags);
+  KittyKeyboardEncoder withFlags(KittyKeyboardEncoderFlags newFlags) {
+    return KittyKeyboardEncoder(flags: newFlags);
   }
 }

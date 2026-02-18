@@ -1,3 +1,8 @@
+/// Key codes for Kitty Keyboard Protocol
+///
+/// Reference: doc/kitty/docs/keyboard-protocol.rst lines 585-668
+library kitty_protocol_keyboard_key_codes;
+
 import 'package:flutter/services.dart';
 
 /// Key codes per Kitty Keyboard Protocol spec

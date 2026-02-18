@@ -1,24 +1,33 @@
-# kitty_key_encoder
+# kitty_protocol
 
-A Flutter package that encodes Flutter `KeyEvent` to [Kitty Keyboard Protocol](https://sw.kovidgoyal.net/kitty/keyboard-protocol/) escape sequences.
+A comprehensive Dart implementation of the [Kitty Terminal Protocols](https://sw.kovidgoyal.net/kitty/) family for terminal emulators.
+
+## Overview
+
+This library provides encoders for all Kitty Protocol specifications:
+
+| Protocol | Escape Type | Description |
+|----------|-------------|-------------|
+| Keyboard | CSI (`\x1b[`) | Key event encoding with modifiers |
+| Graphics | APC (`\x1b_G`) | Image transmission and display |
+| Text Sizing | OSC (`\x1b]`) | Variable-size text rendering |
 
 ## Why This Library?
 
-Traditional terminal emulators send ambiguous key sequences. For example, `Tab` and `Ctrl+I` both send `\x09`, making it impossible for backend applications to distinguish them.
+Traditional terminal emulators send ambiguous sequences. For example, `Tab` and `Ctrl+I` both send `\x09`, making it impossible for backend applications to distinguish them.
 
-**Kitty mode** solves this by sending distinct sequences:
+**Kitty Protocol** solves this by sending distinct sequences:
 
 | Key Combination | Traditional | Kitty Mode |
 |----------------|-------------|------------|
-| Tab | `\x09` | `\x1b[29;1u` |
-| Ctrl+I | `\x09` | `\x1b[105;5u` |
+| Tab | `\x09` | `\x1b[9;1u` |
+| Ctrl+Tab | `\x09` | `\x1b[9;5u` |
 | Ctrl+Enter | - | `\x1b[13;5u` |
 | Shift+Tab | `\x1b[Z` | `\x1b[9;2u` |
 
-This enables full support for complex keyboard shortcuts in Neovim, Emacs, and other terminal applications.
-
 ## Features
 
+### Keyboard Protocol
 - **Full key mapping**: F1-F12, arrow keys, navigation keys (Home/End/PageUp/PageDown)
 - **Modifier support**: Shift, Alt, Ctrl, Meta with proper bit flag handling
 - **Progressive enhancement**: Support for Kitty protocol's extended modes
@@ -26,181 +35,110 @@ This enables full support for complex keyboard shortcuts in Neovim, Emacs, and o
 - **Key release events**: Optional reporting of key release events
 - **Key repeat support**: Full event type reporting (keyDown, keyRepeat, keyUp)
 
+### Graphics Protocol
+- **Image formats**: PNG, RGB, RGBA
+- **Compression**: ZLIB deflate support
+- **Transmission modes**: Direct, file, temporary file, shared memory
+- **Chunked transfer**: For large images via escape codes
+- **Image placement**: Positioning, sizing, z-index layering
+
+### Text Sizing Protocol
+- **Variable-size text**: 1-7x scaling
+- **Fractional scaling**: Superscripts, subscripts, half-size
+- **Width control**: Fix character width issues across terminals
+- **Alignment**: Horizontal and vertical positioning
+
 ## Installation
 
 ```yaml
 dependencies:
-  kitty_key_encoder: ^1.0.0
+  kitty_protocol: ^1.1.0
 ```
 
 ## Usage
 
+### Keyboard Encoding
+
 ```dart
-import 'package:kitty_key_encoder/kitty_key_encoder.dart';
+import 'package:kitty_protocol/kitty_protocol.dart';
 
 void main() {
-  const encoder = KittyEncoder();
+  const encoder = KittyKeyboardEncoder();
 
   // Simple key
-  final event1 = SimpleKeyEvent(logicalKey: LogicalKeyboardKey.enter);
-  print(encoder.encode(event1)); // \x1b[28;1u
+  const event1 = SimpleKeyEvent(logicalKey: LogicalKeyboardKey.enter);
+  print(encoder.encode(event1)); // \x1b[13;1u
 
   // With modifier
-  final event2 = SimpleKeyEvent(
+  const event2 = SimpleKeyEvent(
     logicalKey: LogicalKeyboardKey.enter,
     modifiers: {SimpleModifier.control},
   );
   print(encoder.encode(event2)); // \x1b[13;5u
-
-  // Extended mode with event types
-  const encoder2 = KittyEncoder(
-    flags: KittyEncoderFlags(reportEvent: true),
-  );
-  print(encoder2.encode(event1)); // \x1b[>1;1;28;1u
-
-  // Key repeat
-  const event3 = SimpleKeyEvent(
-    logicalKey: LogicalKeyboardKey.arrowUp,
-    isKeyRepeat: true,
-  );
-  print(encoder2.encode(event3)); // \x1b[>1;2;30;1u
 }
 ```
 
-## Integration Guide
-
-### 1. Core Integration (The Bridge)
-
-Connect Flutter's keyboard events to the encoder:
+### Graphics Encoding
 
 ```dart
-import 'package:kitty_key_encoder/kitty_key_encoder.dart';
+import 'package:kitty_protocol/kitty_protocol.dart';
 
-class KeyboardHandler {
-  final KittyEncoder encoder;
-  final void Function(String) onOutput; // Write to PTY
+void main() {
+  const encoder = KittyGraphicsEncoder();
 
-  KeyboardHandler({
-    KittyEncoderFlags? flags,
-    required this.onOutput,
-  }) : encoder = KittyEncoder(flags: flags ?? const KittyEncoderFlags());
-
-  void onKeyEvent(KeyEvent event) {
-    // Convert Flutter KeyEvent to SimpleKeyEvent
-    final simpleEvent = SimpleKeyEvent(
-      logicalKey: event.logicalKey,
-      modifiers: _convertModifiers(event),
-      isKeyUp: event is KeyUpEvent,
-      isKeyRepeat: event.repeat,
-    );
-
-    final sequence = encoder.encode(simpleEvent);
-    if (sequence.isNotEmpty) {
-      onOutput(sequence);
-    } else {
-      // Fallback: let system handle unknown keys
-    }
-  }
-
-  Set<SimpleModifier> _convertModifiers(KeyEvent event) {
-    final modifiers = <SimpleModifier>{};
-    if (event.modifiers.contains(ModifierKey.shiftModifier)) {
-      modifiers.add(SimpleModifier.shift);
-    }
-    if (event.modifiers.contains(ModifierKey.controlModifier)) {
-      modifiers.add(SimpleModifier.control);
-    }
-    if (event.modifiers.contains(ModifierKey.altModifier)) {
-      modifiers.add(SimpleModifier.alt);
-    }
-    if (event.modifiers.contains(ModifierKey.metaModifier)) {
-      modifiers.add(SimpleModifier.meta);
-    }
-    return modifiers;
-  }
+  // Transmit and display PNG
+  final pngData = File('image.png').readAsBytesSync();
+  final sequence = encoder.encodePng(pngData, imageId: 1);
+  // Output: \x1b_Gf=100,i=1;BASE64_DATA\x1b\
 }
 ```
 
-### 2. State Synchronization (The Handshake)
-
-Handle mode changes from backend applications (Neovim, etc.):
+### Text Sizing
 
 ```dart
-class ModeHandler {
-  KittyEncoder _encoder = const KittyEncoder();
+import 'package:kitty_protocol/kitty_protocol.dart';
 
-  /// Parse CSI > n u sequence from backend
-  /// Called when receiving escape sequence from PTY
-  void onCsiSequence(String private, List<int> params, String finalChar) {
-    if (private == '>' && finalChar == 'u' && params.isNotEmpty) {
-      final modeValue = params.first;
+void main() {
+  const encoder = KittyTextSizingEncoder();
 
-      // Update encoder flags based on received mode
-      _encoder = _encoder.withFlags(KittyEncoderFlags(
-        reportEvent: modeValue & 1 != 0,
-        reportAlternateKeys: modeValue & 2 != 0,
-        reportAllKeysAsEscape: modeValue & 4 != 0,
-      ));
-    }
-  }
+  // Double-sized text
+  print(encoder.encodeDoubleSize('Hello')); // \x1b]_text_size_code;s=2;Hello\x07
 
-  /// Query current mode (send to backend)
-  String queryMode() => '\x1b[>c';
-
-  KittyEncoder get encoder => _encoder;
+  // Superscript
+  print(encoder.encodeSuperscript('2')); // \x1b]_text_size_code;n=1:d=2:v=1;2\x07
 }
 ```
 
-### 3. Complete Example
+## Module Structure
 
-A typical terminal widget integration:
-
-```dart
-class TerminalWidget extends StatefulWidget {
-  const TerminalWidget({super.key});
-
-  @override
-  State<TerminalWidget> createState() => _TerminalWidgetState();
-}
-
-class _TerminalWidgetState extends State<TerminalWidget> {
-  late final KeyboardHandler _keyboardHandler;
-  late final ModeHandler _modeHandler;
-
-  @override
-  void initState() {
-    super.initState();
-    _modeHandler = ModeHandler();
-    _keyboardHandler = KeyboardHandler(
-      onOutput: (sequence) {
-        // Write to PTY process
-        pty.write(sequence);
-      },
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return KeyboardListener(
-      focusNode: FocusNode(),
-      onKeyEvent: _keyboardHandler.onKeyEvent,
-      child: // terminal view
-    );
-  }
-}
+```
+lib/
+├── kitty_protocol.dart          # Main entry point
+└── src/
+    ├── common/
+    │   └── kitty_common.dart  # Shared constants (CSI, APC, OSC)
+    ├── keyboard/
+    │   ├── kitty_encoder.dart       # Keyboard encoder
+    │   ├── kitty_key_codes.dart     # Key code mappings
+    │   ├── kitty_flags.dart         # Protocol flags
+    │   └── kitty_modifier_codes.dart # Modifier definitions
+    ├── graphics/
+    │   └── kitty_graphics_encoder.dart # Graphics encoder
+    └── text_sizing/
+        └── kitty_text_sizing_encoder.dart # Text sizing encoder
 ```
 
 ## Key Codes
 
 | Key | Code |
 |-----|------|
+| Enter | 13 |
+| Tab | 9 |
+| Escape | 27 |
+| Backspace | 127 |
+| Space | 32 |
 | F1-F12 | 11-24 |
 | Arrow Up/Down/Right/Left | 30-33 |
-| Home/End | 36-37 |
-| PageUp/PageDown | 34-35 |
-| Enter | 28 |
-| Tab | 29 |
-| Escape | 53 |
 
 ## Modifier Codes
 
@@ -213,36 +151,25 @@ class _TerminalWidgetState extends State<TerminalWidget> {
 
 ## API Reference
 
-### KittyEncoder
+### Keyboard
 
-Main encoder class with `encode(SimpleKeyEvent)` method.
+- `KittyKeyboardEncoder`: Main encoder class
+- `KittyKeyboardEncoderFlags`: Configuration flags
+- `SimpleKeyEvent`: Key event representation
 
-### KittyEncoderFlags
+### Graphics
 
-Configuration flags:
-- `reportEvent`: Report key release events
-- `reportAlternateKeys`: Report alternate key representations
-- `reportAllKeysAsEscape`: Report all keys as escape sequences
-- `deferToSystemOnComplexInput`: Handle IME/text input conflicts
+- `KittyGraphicsEncoder`: Image encoding
+- `KittyGraphicsFormat`: Image format enum (RGB, RGBA, PNG)
+- `KittyGraphicsAction`: Action types (transmit, display, delete)
 
-### SimpleKeyEvent
+### Text Sizing
 
-Key event class with:
-- `logicalKey`: The keyboard key
-- `modifiers`: Set of modifiers (shift, control, alt, meta)
-- `isKeyUp`: Whether this is a key release event
-- `isKeyRepeat`: Whether this is a key repeat event
-
-### KittyEventType
-
-Event types per Kitty protocol:
-- `keyDown`: Event type 1
-- `keyRepeat`: Event type 2
-- `keyUp`: Event type 3
-
-In extended mode with `reportEvent`, the escape sequence format is:
-`\x1b[>flags;event_type;key;modifiersu`
+- `KittyTextSizingEncoder`: Text sizing encoder
+- `KittyTextScale`: Scale constants (1-7x)
 
 ## References
 
 - [Kitty Keyboard Protocol](https://sw.kovidgoyal.net/kitty/keyboard-protocol/)
+- [Kitty Graphics Protocol](https://sw.kovidgoyal.net/kitty/graphics-protocol/)
+- [Kitty Text Sizing Protocol](https://sw.kovidgoyal.net/kitty/text-sizing-protocol/)

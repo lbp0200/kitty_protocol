@@ -1,0 +1,315 @@
+/// Kitty Graphics Encoder - Encodes image data to Kitty Graphics Protocol escape sequences
+///
+/// Reference: doc/kitty/docs/graphics-protocol.rst
+library kitty_protocol_graphics_encoder;
+
+/// Image format types
+enum KittyGraphicsFormat {
+  /// 32-bit RGBA (default)
+  rgba(32),
+  /// 24-bit RGB
+  rgb(24),
+  /// PNG format
+  png(100);
+
+  final int value;
+  const KittyGraphicsFormat(this.value);
+}
+
+/// Compression types
+enum KittyGraphicsCompression {
+  /// No compression
+  none(''),
+  /// ZLIB deflate
+  deflate('z');
+
+  final String value;
+  const KittyGraphicsCompression(this.value);
+}
+
+/// Transmission medium types
+enum KittyGraphicsTransmission {
+  /// Direct transmission in escape code
+  direct('d'),
+  /// File path
+  file('f'),
+  /// Temporary file
+  temporaryFile('t'),
+  /// Shared memory
+  sharedMemory('s');
+
+  final String value;
+  const KittyGraphicsTransmission(this.value);
+}
+
+/// Action types for graphics protocol
+enum KittyGraphicsAction {
+  /// Transmit and display
+  transmitAndDisplay('T'),
+  /// Transmit only (store with id)
+  transmit('t'),
+  /// Display previously transmitted image
+  display('p'),
+  /// Delete images
+  delete('d'),
+  /// Query action
+  query('q');
+
+  final String value;
+  const KittyGraphicsAction(this.value);
+}
+
+/// Cursor movement policy
+enum KittyCursorMovement {
+  /// Default - move cursor after placement
+  autoMove(0),
+  /// No cursor movement
+  noMove(1);
+
+  final int value;
+  const KittyCursorMovement(this.value);
+}
+
+/// Graphics z-index positioning
+enum KittyGraphicsLayer {
+  /// Below text
+  belowText(-1),
+  /// Default layer
+  defaultLayer(0),
+  /// Above text
+  aboveText(1);
+
+  final int value;
+  const KittyGraphicsLayer(this.value);
+}
+
+/// Placeholder for Kitty Graphics Encoder
+///
+/// This is a placeholder implementation. Full implementation will include:
+/// - Image transmission (RGB, RGBA, PNG)
+/// - Compression support (ZLIB deflate)
+/// - Multiple transmission mediums (direct, file, shared memory)
+/// - Chunked transmission for large images
+/// - Image placement and positioning
+/// - Delete operations
+/// - Unicode placeholder support
+///
+/// Reference: doc/kitty/docs/graphics-protocol.rst
+///
+/// Example escape code format:
+///   <ESC>_G<control data>;<payload><ESC>\
+///
+/// Control data is comma-separated key=value pairs:
+///   - f: format (32=RGBA, 24=RGB, 100=PNG)
+///   - s: width in pixels
+///   - v: height in pixels
+///   - o: compression (z=deflate)
+///   - t: transmission medium (d=direct, f=file, t=temp, s=shared memory)
+///   - m: chunk flag (1=more chunks, 0=last chunk)
+///   - a: action (T=transmit+display, t=transmit, p=display, d=delete, q=query)
+///   - i: image id
+///   - p: placement id
+///   - x, y: cursor position offsets
+///   - c, r: columns and rows for display
+///   - z: z-index
+class KittyGraphicsEncoder {
+  /// Default chunk size for base64 encoded data
+  static const int defaultChunkSize = 4096;
+
+  /// Maximum chunk size (must be multiple of 4 for base64)
+  static const int maxChunkSize = 4096;
+
+  const KittyGraphicsEncoder();
+
+  /// Build a graphics escape sequence
+  ///
+  /// Format: <ESC>_G<control data>;<payload><ESC>\
+  String buildSequence({
+    required String controlData,
+    required String payload,
+  }) {
+    return '\x1b_G$controlData;$payload\x1b\\';
+  }
+
+  /// Build control data from key-value pairs
+  String buildControlData(Map<String, dynamic> params) {
+    final pairs = <String>[];
+    params.forEach((key, value) {
+      if (value != null && value != 0 && value != '') {
+        pairs.add('$key=$value');
+      }
+    });
+    return pairs.join(',');
+  }
+
+  /// Encode image data to base64
+  String encodeBase64(List<int> data) {
+    // Placeholder - full implementation would use dart:convert
+    return '';
+  }
+
+  /// Create a simple PNG transmission sequence
+  ///
+  /// Per protocol line 292:
+  ///   <ESC>_Gf=100;<payload><ESC>\
+  String encodePng(List<int> pngData, {int? imageId}) {
+    final params = <String, dynamic>{
+      'f': 100,
+      if (imageId != null) 'i': imageId,
+    };
+    final controlData = buildControlData(params);
+    final payload = encodeBase64(pngData);
+    return buildSequence(controlData: controlData, payload: payload);
+  }
+
+  /// Create a RGBA image transmission sequence
+  ///
+  /// Per protocol line 281:
+  ///   <ESC>_Gf=24,s=10,v=20;<payload><ESC>\
+  String encodeRgba({
+    required int width,
+    required int height,
+    required List<int> rgbaData,
+    int? imageId,
+    bool compress = false,
+  }) {
+    final params = <String, dynamic>{
+      'f': 32,
+      's': width,
+      'v': height,
+      if (compress) 'o': 'z',
+      if (imageId != null) 'i': imageId,
+    };
+    final controlData = buildControlData(params);
+    var data = rgbaData;
+    if (compress) {
+      // TODO: Implement compression
+    }
+    final payload = encodeBase64(data);
+    return buildSequence(controlData: controlData, payload: payload);
+  }
+
+  /// Create an RGB image transmission sequence
+  String encodeRgb({
+    required int width,
+    required int height,
+    required List<int> rgbData,
+    int? imageId,
+    bool compress = false,
+  }) {
+    final params = <String, dynamic>{
+      'f': 24,
+      's': width,
+      'v': height,
+      if (compress) 'o': 'z',
+      if (imageId != null) 'i': imageId,
+    };
+    final controlData = buildControlData(params);
+    var data = rgbData;
+    if (compress) {
+      // TODO: Implement compression
+    }
+    final payload = encodeBase64(data);
+    return buildSequence(controlData: controlData, payload: payload);
+  }
+
+  /// Create a delete command
+  ///
+  /// Per protocol line 782-786:
+  ///   <ESC>_Ga=d<ESC>\
+  String deleteAll() {
+    return buildSequence(controlData: 'a=d', payload: '');
+  }
+
+  /// Delete specific image by id
+  String deleteImage(int imageId, {int? placementId}) {
+    final params = <String, dynamic>{
+      'a': 'd',
+      'd': 'i',
+      'i': imageId,
+      if (placementId != null) 'p': placementId,
+    };
+    return buildSequence(controlData: buildControlData(params), payload: '');
+  }
+
+  /// Delete all images in cell range
+  String deleteInRegion(int startX, int startY, int endX, int endY) {
+    final params = <String, dynamic>{
+      'a': 'd',
+      'd': 'r',
+      'x': startX,
+      'y': startY,
+    };
+    return buildSequence(controlData: buildControlData(params), payload: '');
+  }
+
+  /// Create a placement command
+  ///
+  /// Per protocol lines 457-459:
+  ///   <ESC>_Ga=p,i=10<ESC>\
+  String placeImage({
+    required int imageId,
+    int? placementId,
+    int? columns,
+    int? rows,
+    int? xOffset,
+    int? yOffset,
+    int? zIndex,
+    KittyCursorMovement cursorMovement = KittyCursorMovement.autoMove,
+  }) {
+    final params = <String, dynamic>{
+      'a': 'p',
+      'i': imageId,
+      if (placementId != null) 'p': placementId,
+      if (columns != null) 'c': columns,
+      if (rows != null) 'r': rows,
+      if (xOffset != null) 'X': xOffset,
+      if (yOffset != null) 'Y': yOffset,
+      if (zIndex != null) 'z': zIndex,
+      'C': cursorMovement.value,
+    };
+    return buildSequence(controlData: buildControlData(params), payload: '');
+  }
+
+  /// Transmit and display image in one command
+  ///
+  /// Per protocol line 457:
+  ///   <ESC>_Ga=T,f=100,<payload><ESC>\
+  String transmitAndDisplay({
+    required int imageId,
+    int? columns,
+    int? rows,
+    int? xOffset,
+    int? yOffset,
+    int? zIndex,
+  }) {
+    final params = <String, dynamic>{
+      'a': 'T',
+      'i': imageId,
+      if (columns != null) 'c': columns,
+      if (rows != null) 'r': rows,
+      if (xOffset != null) 'X': xOffset,
+      if (yOffset != null) 'Y': yOffset,
+      if (zIndex != null) 'z': zIndex,
+    };
+    return buildSequence(controlData: buildControlData(params), payload: '');
+  }
+
+  /// Chunk data for transmission
+  ///
+  /// Per protocol lines 383-401:
+  /// Split data into chunks of maxChunkSize bytes
+  List<String> chunkData(List<int> data) {
+    final chunks = <String>[];
+    final base64Data = encodeBase64(data);
+
+    for (var i = 0; i < base64Data.length; i += maxChunkSize) {
+      final end = (i + maxChunkSize < base64Data.length)
+          ? i + maxChunkSize
+          : base64Data.length;
+      chunks.add(base64Data.substring(i, end));
+    }
+
+    return chunks;
+  }
+}

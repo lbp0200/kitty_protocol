@@ -1,6 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:kitty_key_encoder/kitty_key_encoder.dart';
+import 'package:kitty_protocol/kitty_protocol.dart';
 
 void main() {
   group('KittyModifierCodes', () {
@@ -89,36 +89,36 @@ void main() {
     });
   });
 
-  group('KittyEncoderFlags', () {
+  group('KittyKeyboardEncoderFlags', () {
     test('default flags are all false', () {
-      const flags = KittyEncoderFlags();
+      const flags = KittyKeyboardEncoderFlags();
       expect(flags.reportEvent, isFalse);
       expect(flags.reportAlternateKeys, isFalse);
       expect(flags.reportAllKeysAsEscape, isFalse);
     });
 
     test('toCSIValue returns 0 for default flags', () {
-      const flags = KittyEncoderFlags();
+      const flags = KittyKeyboardEncoderFlags();
       expect(flags.toCSIValue(), equals(0));
     });
 
     test('toCSIValue returns 1 for reportEvent', () {
-      const flags = KittyEncoderFlags(reportEvent: true);
+      const flags = KittyKeyboardEncoderFlags(reportEvent: true);
       expect(flags.toCSIValue(), equals(1));
     });
 
     test('toCSIValue returns 2 for reportAlternateKeys', () {
-      const flags = KittyEncoderFlags(reportAlternateKeys: true);
+      const flags = KittyKeyboardEncoderFlags(reportAlternateKeys: true);
       expect(flags.toCSIValue(), equals(2));
     });
 
     test('toCSIValue returns 4 for reportAllKeysAsEscape', () {
-      const flags = KittyEncoderFlags(reportAllKeysAsEscape: true);
+      const flags = KittyKeyboardEncoderFlags(reportAllKeysAsEscape: true);
       expect(flags.toCSIValue(), equals(4));
     });
 
     test('toCSIValue combines flags correctly', () {
-      const flags = KittyEncoderFlags(
+      const flags = KittyKeyboardEncoderFlags(
         reportEvent: true,
         reportAlternateKeys: true,
       );
@@ -126,29 +126,29 @@ void main() {
     });
 
     test('isExtendedMode returns true when any flag is set', () {
-      const flags = KittyEncoderFlags(reportEvent: true);
+      const flags = KittyKeyboardEncoderFlags(reportEvent: true);
       expect(flags.isExtendedMode, isTrue);
     });
 
     test('isExtendedMode returns false for default', () {
-      const flags = KittyEncoderFlags();
+      const flags = KittyKeyboardEncoderFlags();
       expect(flags.isExtendedMode, isFalse);
     });
 
     test('deferToSystemOnComplexInput defaults to false', () {
-      const flags = KittyEncoderFlags();
+      const flags = KittyKeyboardEncoderFlags();
       expect(flags.deferToSystemOnComplexInput, isFalse);
     });
 
     test('deferToSystemOnComplexInput can be set to true', () {
-      const flags = KittyEncoderFlags(deferToSystemOnComplexInput: true);
+      const flags = KittyKeyboardEncoderFlags(deferToSystemOnComplexInput: true);
       expect(flags.deferToSystemOnComplexInput, isTrue);
     });
   });
 
-  group('KittyEncoder', () {
+  group('KittyKeyboardEncoder', () {
     test('encode simple key produces correct sequence', () {
-      const encoder = KittyEncoder();
+      const encoder = KittyKeyboardEncoder();
       const event = SimpleKeyEvent(
         logicalKey: LogicalKeyboardKey.enter,
       );
@@ -157,7 +157,7 @@ void main() {
     });
 
     test('encode Ctrl+Enter produces correct sequence', () {
-      const encoder = KittyEncoder();
+      const encoder = KittyKeyboardEncoder();
       const event = SimpleKeyEvent(
         logicalKey: LogicalKeyboardKey.enter,
         modifiers: {SimpleModifier.control},
@@ -169,7 +169,7 @@ void main() {
     });
 
     test('encode Shift+Tab produces correct sequence', () {
-      const encoder = KittyEncoder();
+      const encoder = KittyKeyboardEncoder();
       const event = SimpleKeyEvent(
         logicalKey: LogicalKeyboardKey.tab,
         modifiers: {SimpleModifier.shift},
@@ -181,7 +181,7 @@ void main() {
     });
 
     test('encode F1 produces correct sequence', () {
-      const encoder = KittyEncoder();
+      const encoder = KittyKeyboardEncoder();
       const event = SimpleKeyEvent(
         logicalKey: LogicalKeyboardKey.f1,
       );
@@ -190,8 +190,8 @@ void main() {
     });
 
     test('encode with extended mode uses CSI > format', () {
-      const encoder = KittyEncoder(
-        flags: KittyEncoderFlags(reportEvent: true),
+      const encoder = KittyKeyboardEncoder(
+        flags: KittyKeyboardEncoderFlags(reportEvent: true),
       );
       const event = SimpleKeyEvent(
         logicalKey: LogicalKeyboardKey.enter,
@@ -201,7 +201,7 @@ void main() {
     });
 
     test('encode F2-F12 produce correct sequences', () {
-      const encoder = KittyEncoder();
+      const encoder = KittyKeyboardEncoder();
       expect(encoder.encode(const SimpleKeyEvent(logicalKey: LogicalKeyboardKey.f2)), equals('\x1b[12;1u'));
       expect(encoder.encode(const SimpleKeyEvent(logicalKey: LogicalKeyboardKey.f3)), equals('\x1b[13;1u'));
       expect(encoder.encode(const SimpleKeyEvent(logicalKey: LogicalKeyboardKey.f4)), equals('\x1b[14;1u'));
@@ -216,7 +216,7 @@ void main() {
     });
 
     test('encode arrow keys produce correct sequences', () {
-      const encoder = KittyEncoder();
+      const encoder = KittyKeyboardEncoder();
       expect(encoder.encode(const SimpleKeyEvent(logicalKey: LogicalKeyboardKey.arrowUp)), equals('\x1b[30;1u'));
       expect(encoder.encode(const SimpleKeyEvent(logicalKey: LogicalKeyboardKey.arrowDown)), equals('\x1b[31;1u'));
       expect(encoder.encode(const SimpleKeyEvent(logicalKey: LogicalKeyboardKey.arrowRight)), equals('\x1b[32;1u'));
@@ -224,7 +224,7 @@ void main() {
     });
 
     test('encode Ctrl+Shift+Enter produces correct sequence', () {
-      const encoder = KittyEncoder();
+      const encoder = KittyKeyboardEncoder();
       const event = SimpleKeyEvent(
         logicalKey: LogicalKeyboardKey.enter,
         modifiers: {SimpleModifier.control, SimpleModifier.shift},
@@ -236,7 +236,7 @@ void main() {
     });
 
     test('encode Alt+F4 produces correct sequence', () {
-      const encoder = KittyEncoder();
+      const encoder = KittyKeyboardEncoder();
       const event = SimpleKeyEvent(
         logicalKey: LogicalKeyboardKey.f4,
         modifiers: {SimpleModifier.alt},
@@ -246,7 +246,7 @@ void main() {
     });
 
     test('encode navigation keys produce correct sequences', () {
-      const encoder = KittyEncoder();
+      const encoder = KittyKeyboardEncoder();
       expect(encoder.encode(const SimpleKeyEvent(logicalKey: LogicalKeyboardKey.pageUp)), equals('\x1b[35;1u'));
       expect(encoder.encode(const SimpleKeyEvent(logicalKey: LogicalKeyboardKey.pageDown)), equals('\x1b[34;1u'));
       expect(encoder.encode(const SimpleKeyEvent(logicalKey: LogicalKeyboardKey.home)), equals('\x1b[36;1u'));
@@ -254,27 +254,27 @@ void main() {
     });
 
     test('encode Escape produces correct sequence', () {
-      const encoder = KittyEncoder();
+      const encoder = KittyKeyboardEncoder();
       expect(encoder.encode(const SimpleKeyEvent(logicalKey: LogicalKeyboardKey.escape)), equals('\x1b[27;1u'));
     });
 
     test('encode Backspace produces correct sequence', () {
-      const encoder = KittyEncoder();
+      const encoder = KittyKeyboardEncoder();
       expect(encoder.encode(const SimpleKeyEvent(logicalKey: LogicalKeyboardKey.backspace)), equals('\x1b[127;1u'));
     });
 
     test('encode Space produces correct sequence', () {
-      const encoder = KittyEncoder();
+      const encoder = KittyKeyboardEncoder();
       expect(encoder.encode(const SimpleKeyEvent(logicalKey: LogicalKeyboardKey.space)), equals('\x1b[32;1u'));
     });
 
     test('encode Delete produces correct sequence', () {
-      const encoder = KittyEncoder();
+      const encoder = KittyKeyboardEncoder();
       expect(encoder.encode(const SimpleKeyEvent(logicalKey: LogicalKeyboardKey.delete)), equals('\x1b[127;1u'));
     });
 
     test('encode Meta key produces correct sequence', () {
-      const encoder = KittyEncoder();
+      const encoder = KittyKeyboardEncoder();
       const event = SimpleKeyEvent(
         logicalKey: LogicalKeyboardKey.keyA,
         modifiers: {SimpleModifier.meta},
@@ -285,22 +285,22 @@ void main() {
     });
 
     test('encode unknown key returns empty string', () {
-      const encoder = KittyEncoder();
+      const encoder = KittyKeyboardEncoder();
       const event = SimpleKeyEvent(logicalKey: LogicalKeyboardKey.keyA);
       expect(encoder.encode(event), equals(''));
     });
 
     test('withFlags creates new encoder with different flags', () {
-      const encoder = KittyEncoder();
-      final newEncoder = encoder.withFlags(const KittyEncoderFlags(reportEvent: true));
+      const encoder = KittyKeyboardEncoder();
+      final newEncoder = encoder.withFlags(const KittyKeyboardEncoderFlags(reportEvent: true));
       expect(newEncoder.isExtendedMode, isTrue);
       expect(encoder.isExtendedMode, isFalse);
     });
 
     // Key Event Types Tests (Kitty Protocol)
     test('encode key down in extended mode includes event_type 1', () {
-      const encoder = KittyEncoder(
-        flags: KittyEncoderFlags(reportEvent: true),
+      const encoder = KittyKeyboardEncoder(
+        flags: KittyKeyboardEncoderFlags(reportEvent: true),
       );
       const event = SimpleKeyEvent(
         logicalKey: LogicalKeyboardKey.enter,
@@ -314,8 +314,8 @@ void main() {
     });
 
     test('encode key repeat in extended mode includes event_type 2', () {
-      const encoder = KittyEncoder(
-        flags: KittyEncoderFlags(reportEvent: true),
+      const encoder = KittyKeyboardEncoder(
+        flags: KittyKeyboardEncoderFlags(reportEvent: true),
       );
       const event = SimpleKeyEvent(
         logicalKey: LogicalKeyboardKey.enter,
@@ -329,8 +329,8 @@ void main() {
     });
 
     test('encode key up in extended mode includes event_type 3', () {
-      const encoder = KittyEncoder(
-        flags: KittyEncoderFlags(reportEvent: true),
+      const encoder = KittyKeyboardEncoder(
+        flags: KittyKeyboardEncoderFlags(reportEvent: true),
       );
       const event = SimpleKeyEvent(
         logicalKey: LogicalKeyboardKey.enter,
@@ -343,7 +343,7 @@ void main() {
     });
 
     test('encode key up in non-extended mode uses ~ prefix', () {
-      const encoder = KittyEncoder();
+      const encoder = KittyKeyboardEncoder();
       const event = SimpleKeyEvent(
         logicalKey: LogicalKeyboardKey.enter,
         isKeyUp: true,
@@ -354,7 +354,7 @@ void main() {
     });
 
     test('encode key repeat in non-extended mode has no special handling', () {
-      const encoder = KittyEncoder();
+      const encoder = KittyKeyboardEncoder();
       const event = SimpleKeyEvent(
         logicalKey: LogicalKeyboardKey.enter,
         isKeyRepeat: true,
@@ -366,7 +366,7 @@ void main() {
 
     // Backspace Tests
     test('encode Backspace produces correct sequence', () {
-      const encoder = KittyEncoder();
+      const encoder = KittyKeyboardEncoder();
       const event = SimpleKeyEvent(logicalKey: LogicalKeyboardKey.backspace);
       final result = encoder.encode(event);
       // Backspace = 127
@@ -374,8 +374,8 @@ void main() {
     });
 
     test('encode Backspace in extended mode produces correct sequence', () {
-      const encoder = KittyEncoder(
-        flags: KittyEncoderFlags(reportEvent: true),
+      const encoder = KittyKeyboardEncoder(
+        flags: KittyKeyboardEncoderFlags(reportEvent: true),
       );
       const event = SimpleKeyEvent(logicalKey: LogicalKeyboardKey.backspace);
       final result = encoder.encode(event);
@@ -385,8 +385,8 @@ void main() {
 
     // IME/Text Editing Conflict Tests
     test('deferToSystemOnComplexInput returns empty for Ctrl+Letter', () {
-      const encoder = KittyEncoder(
-        flags: KittyEncoderFlags(deferToSystemOnComplexInput: true),
+      const encoder = KittyKeyboardEncoder(
+        flags: KittyKeyboardEncoderFlags(deferToSystemOnComplexInput: true),
       );
       const event = SimpleKeyEvent(
         logicalKey: LogicalKeyboardKey.keyA,
@@ -397,8 +397,8 @@ void main() {
     });
 
     test('deferToSystemOnComplexInput returns empty for Alt+Letter', () {
-      const encoder = KittyEncoder(
-        flags: KittyEncoderFlags(deferToSystemOnComplexInput: true),
+      const encoder = KittyKeyboardEncoder(
+        flags: KittyKeyboardEncoderFlags(deferToSystemOnComplexInput: true),
       );
       const event = SimpleKeyEvent(
         logicalKey: LogicalKeyboardKey.keyB,
@@ -409,8 +409,8 @@ void main() {
     });
 
     test('deferToSystemOnComplexInput still encodes non-printable with modifiers', () {
-      const encoder = KittyEncoder(
-        flags: KittyEncoderFlags(deferToSystemOnComplexInput: true),
+      const encoder = KittyKeyboardEncoder(
+        flags: KittyKeyboardEncoderFlags(deferToSystemOnComplexInput: true),
       );
       const event = SimpleKeyEvent(
         logicalKey: LogicalKeyboardKey.enter,
@@ -422,8 +422,8 @@ void main() {
     });
 
     test('deferToSystemOnComplexInput works with Shift+Printable when enabled', () {
-      const encoder = KittyEncoder(
-        flags: KittyEncoderFlags(deferToSystemOnComplexInput: true),
+      const encoder = KittyKeyboardEncoder(
+        flags: KittyKeyboardEncoderFlags(deferToSystemOnComplexInput: true),
       );
       // Shift+letter is printable but has modifier, should defer
       const event = SimpleKeyEvent(
@@ -436,7 +436,7 @@ void main() {
     });
 
     test('deferToSystemOnComplexInput disabled by default', () {
-      const encoder = KittyEncoder();
+      const encoder = KittyKeyboardEncoder();
       const event = SimpleKeyEvent(
         logicalKey: LogicalKeyboardKey.keyA,
         modifiers: {SimpleModifier.control},
