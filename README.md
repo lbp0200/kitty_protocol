@@ -2,15 +2,25 @@
 
 A comprehensive Dart implementation of the [Kitty Terminal Protocols](https://sw.kovidgoyal.net/kitty/) family for terminal emulators.
 
-## Overview
+## Protocol Coverage
 
-This library provides encoders for all Kitty Protocol specifications:
+This library implements **100%** of the Kitty Protocol specifications:
 
-| Protocol | Escape Type | Description |
-|----------|-------------|-------------|
-| Keyboard | CSI (`\x1b[`) | Key event encoding with modifiers |
-| Graphics | APC (`\x1b_G`) | Image transmission and display |
-| Text Sizing | OSC (`\x1b]`) | Variable-size text rendering |
+| # | Protocol | Escape Type | Module | Status |
+|---|----------|-------------|--------|--------|
+| 1 | Keyboard Protocol | CSI | `keyboard/` | ✅ |
+| 2 | Graphics Protocol | APC | `graphics/` | ✅ |
+| 3 | Text Sizing | OSC | `text_sizing/` | ✅ |
+| 4 | File Transfer | OSC 5113 | `file_transfer/` | ✅ |
+| 5 | Clipboard (Basic) | OSC 52 | `clipboard/` | ✅ |
+| 6 | Clipboard (Extended) | OSC 5522 | `clipboard/` | ✅ |
+| 7 | Desktop Notifications | OSC 99 | `notifications/` | ✅ |
+| 8 | Remote Control | DCS | `remote_control/` | ✅ |
+| 9 | Color Stack | OSC 30001/30101 | `common/` | ✅ |
+| 10 | Pointer Shapes | OSC 22 | `common/` | ✅ |
+| 11 | Styled Underlines | CSI 4:3 | `common/` | ✅ |
+| 12 | Hyperlinks | OSC 8 | `common/` | ✅ |
+| 13 | Unicode Placeholders | Graphics | `graphics/` | ✅ |
 
 ## Why This Library?
 

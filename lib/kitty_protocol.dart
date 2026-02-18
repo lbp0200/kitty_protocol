@@ -49,6 +49,7 @@ export 'src/common/kitty_common.dart';
 export 'src/common/kitty_underline.dart';
 export 'src/common/kitty_pointer_shapes.dart';
 export 'src/common/kitty_color_stack.dart';
+export 'src/common/kitty_hyperlinks.dart';
 
 // Remote control exports
 export 'src/remote_control/kitty_remote_control_encoder.dart';

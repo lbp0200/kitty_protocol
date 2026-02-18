@@ -313,3 +313,43 @@ class KittyGraphicsEncoder {
     return chunks;
   }
 }
+
+/// Unicode Placeholders for Graphics
+///
+/// Per graphics-protocol.rst, Unicode placeholders can be used to ensure
+/// images scroll with text content.
+///
+/// The terminal will replace these with the actual image when rendering.
+class KittyGraphicsPlaceholders {
+  KittyGraphicsPlaceholders._();
+
+  /// Get placeholder character for image width
+  ///
+  /// Use this to create a placeholder that matches image dimensions
+  static String getPlaceholder({
+    required int widthInCells,
+    int heightInCells = 1,
+  }) {
+    // For single cell, use thin space
+    if (widthInCells == 1 && heightInCells == 1) {
+      return '\u200B'; // Zero width space
+    }
+
+    // For multi-cell, use block characters
+    final buffer = StringBuffer();
+    for (var y = 0; y < heightInCells; y++) {
+      for (var x = 0; x < widthInCells; x++) {
+        // Use medium shade for placeholder
+        buffer.write('\u2591');
+      }
+      if (heightInCells > 1) buffer.write('\n');
+    }
+    return buffer.toString();
+  }
+
+  /// Generate a transparent placeholder (zero-width)
+  static String get transparent => '\u200B';
+
+  /// Generate a 1-cell placeholder
+  static String get singleCell => '\u2588'; // Full block
+}
