@@ -1,7 +1,22 @@
-pubspec.lock
+# --- 1. 协议源文档与 AI 配置文件 ---
+doc/
+*.rst
+CLAUDE.md
+.cursorrules
+.cursor/
+
+# --- 2. 自动化构建与本地缓存 ---
 build/
 .dart_tool/
-.github/
-doc/
+.packages
+pubspec.lock
+
+# --- 3. 测试与开发资源 ---
 test/
-CLAUDE.md
+.github/
+
+# --- 4. IDE 与系统冗余文件 ---
+.vscode/
+.idea/
+.DS_Store
+*.log
