@@ -32,3 +32,5 @@ coverage/
 .env*
 # pubspec.lock (库项目通常不强制提交)
 pubspec.lock
+.claude
+.worktrees/
