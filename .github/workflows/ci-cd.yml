@@ -11,9 +11,8 @@ on:
       - main
   workflow_dispatch:
 
-# Permissions for OIDC-based publishing to pub.dev
 permissions:
-  id-token: write
+  id-token: write # Required for OIDC authentication
   contents: read
 
 jobs:
@@ -42,32 +41,5 @@ jobs:
   publish:
     name: "Publish to pub.dev"
     needs: ci
-    runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.24.0'
-          cache: true
-
-      - name: Get dependencies
-        run: flutter pub get
-
-      - name: Verify version match
-        run: |
-          TAG_VERSION=${GITHUB_REF#refs/tags/v}
-          PUBSPEC_VERSION=$(grep '^version:' pubspec.yaml | sed 's/version: //')
-          if [ "$TAG_VERSION" != "$PUBSPEC_VERSION" ]; then
-            echo "Error: Tag version ($TAG_VERSION) != pubspec version ($PUBSPEC_VERSION)"
-            exit 1
-          fi
-
-      - name: Publish Dry Run
-        run: flutter pub publish --dry-run
-
-      - name: Publish to pub.dev
-        run: flutter pub publish -f
+    uses: dart-lang/setup-dart/.github/workflows/publish.yml@v1
