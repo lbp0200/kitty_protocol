@@ -1,6 +1,6 @@
 name: kitty_protocol
 description: Dart implementation of the Kitty Protocol for terminal emulators. Supports keyboard and graphics protocols.
-version: 1.2.0
+version: 1.2.1
 homepage: https://github.com/lbp0200/kitty_protocol
 
 environment:
