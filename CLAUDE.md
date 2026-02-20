@@ -155,6 +155,35 @@ Before marking work complete:
 | "Deleting work is wasteful" | Sunk cost fallacy. Keeping unverified code is technical debt. |
 | "Keep as reference, adapt existing code" | That's testing after. Delete means delete. |
 
+## Publishing
+
+This project uses automated publishing via GitHub Actions with OIDC authentication.
+
+### Release Process
+
+When the human partner requests a release:
+
+1. **Check local status** - Ensure all changes are committed
+2. **Bump version** - Increment version in `pubspec.yaml` (follow semver)
+3. **Update CHANGELOG** - Add new version entry at the top
+4. **Commit** - Create commit with version bump
+5. **Create tag** - `git tag v<version>`
+6. **Push** - Push commit and tag: `git push && git push origin v<version>`
+
+### CI/CD Workflow
+
+- **Tests & Analysis** runs on every push and PR
+- **Publish to pub.dev** runs automatically when a `v*` tag is pushed
+- Uses `dart-lang/setup-dart` reusable workflow for OIDC-based publishing
+
+### Version Bump Guidelines
+
+| Type | Example | When |
+|------|---------|------|
+| Patch | 1.2.3 → 1.2.4 | Bug fixes |
+| Minor | 1.2.3 → 1.3.0 | New features (backward compatible) |
+| Major | 1.2.3 → 2.0.0 | Breaking changes |
+
 ## Protocol Coverage (100%)
 
 | # | Protocol | Status |
