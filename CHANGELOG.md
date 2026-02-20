@@ -1,3 +1,7 @@
+## 1.2.3
+
+- Ci: Use dart-lang/setup-dart reusable workflow for OIDC publishing
+
 ## 1.2.2
 
 - Fix: Use `flutter pub publish` instead of `flutter publish` in CI/CD
