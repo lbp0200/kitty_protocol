@@ -100,6 +100,21 @@ The package consists of **19 core modules**:
 
 ## Testing
 
+> **TDD is mandatory for this project.** Follow the Red-Green-Refactor cycle.
+
+### Test-Driven Development (TDD)
+
+**The Iron Law:** NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST
+
+For every new feature, bug fix, or behavior change:
+1. **RED**: Write a failing test first
+2. **Verify RED**: Run the test and confirm it fails for the right reason
+3. **GREEN**: Write minimal code to pass the test
+4. **Verify GREEN**: Confirm the test passes and all tests pass
+5. **REFACTOR**: Clean up if needed while keeping tests green
+
+### Running Tests
+
 Run all tests:
 ```bash
 flutter test
@@ -109,6 +124,36 @@ Run specific test file:
 ```bash
 flutter test test/keyboard/kitty_encoder_test.dart
 ```
+
+Generate coverage report:
+```bash
+flutter test --coverage
+```
+
+### TDD Verification Checklist
+
+Before marking work complete:
+- [ ] Every new function/method has a test
+- [ ] Watched each test fail before implementing
+- [ ] Each test failed for expected reason (feature missing, not typo)
+- [ ] Wrote minimal code to pass each test
+- [ ] All tests pass
+- [ ] Output pristine (no errors, warnings)
+- [ ] Tests use real code (mocks only if unavoidable)
+- [ ] Edge cases and errors covered
+
+**Cannot check all boxes?** You skipped TDD. Start over.
+
+### Common TDD Rationalizations (Don't Do This)
+
+| Excuse | Reality |
+|--------|---------|
+| "Too simple to test" | Simple code breaks. Test takes 30 seconds. |
+| "I'll test after" | Tests passing immediately prove nothing. |
+| "Tests after achieve same goals" | Tests-after = "what does this do?" Tests-first = "what should this do?" |
+| "Already manually tested" | Ad-hoc ≠ systematic. No record, can't re-run. |
+| "Deleting work is wasteful" | Sunk cost fallacy. Keeping unverified code is technical debt. |
+| "Keep as reference, adapt existing code" | That's testing after. Delete means delete. |
 
 ## Protocol Coverage (100%)
 
