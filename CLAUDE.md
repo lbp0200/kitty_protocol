@@ -13,7 +13,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 All protocol implementations are based on the official Kitty documentation:
 
-- **Local Docs**: `doc/kitty/docs/`
+- **Local Docs**: `docs/kitty/docs/`
 - **Keyboard Protocol**: `doc/kitty/docs/keyboard-protocol.rst`
 - **Graphics Protocol**: `doc/kitty/docs/graphics-protocol.rst`
 - **Text Sizing Protocol**: `doc/kitty/docs/text-sizing-protocol.rst`
