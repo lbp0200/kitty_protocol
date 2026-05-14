@@ -161,9 +161,9 @@ class KittyNotificationEncoder {
     String? sessionId,
   }) {
     // Build metadata
+    final effectiveId = id ?? sessionId;
     final metadata = _encodeMetadata({
-      if (id != null) 'i': id,
-      if (sessionId != null) 'i': sessionId,
+      if (effectiveId != null) 'i': effectiveId,
       'd': isDone ? '1' : '0',
       if (encoded) 'e': '1',
       if (applicationName != null) 'f': applicationName,

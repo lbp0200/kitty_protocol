@@ -5,6 +5,8 @@
 /// Reference: doc/kitty/docs/graphics-protocol.rst
 library kitty_protocol_graphics_test;
 
+import 'dart:convert' show base64;
+import 'dart:io' show zlib;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kitty_protocol/kitty_protocol.dart';
 
@@ -34,6 +36,72 @@ void main() {
       expect(result, contains('i=1'));
     });
 
+    test('encode RGBA with compression includes o=z', () {
+      final result = encoder.encodeRgba(
+        width: 10,
+        height: 20,
+        rgbaData: [0, 0, 0, 0],
+        compress: true,
+      );
+      expect(result, contains('o=z'));
+    });
+
+    test('encode RGBA with compression round-trips correctly', () {
+      final original = List.generate(1000, (_) => 128);
+      final seq = encoder.encodeRgba(
+        width: 10,
+        height: 100,
+        rgbaData: original,
+        compress: true,
+      );
+      final semicolon = seq.indexOf(';');
+      final terminator = seq.indexOf('\x1b\\');
+      final payload = seq.substring(semicolon + 1, terminator);
+      final decoded = base64.decode(payload);
+      final decompressed = zlib.decode(decoded);
+      expect(decompressed, equals(original));
+    });
+
+    test('encode RGBA with compression reduces payload size', () {
+      final data = List.generate(10000, (_) => 255);
+      final uncompressed = encoder.encodeRgba(width: 100, height: 100, rgbaData: data);
+      final compressed = encoder.encodeRgba(width: 100, height: 100, rgbaData: data, compress: true);
+      expect(compressed.length, lessThan(uncompressed.length));
+    });
+
+    test('encode RGB with compression includes o=z', () {
+      final result = encoder.encodeRgb(
+        width: 10,
+        height: 20,
+        rgbData: [0, 0, 0],
+        compress: true,
+      );
+      expect(result, contains('o=z'));
+    });
+
+    test('encode RGB with compression round-trips correctly', () {
+      final original = List.generate(999, (_) => 64); // Multiple of 3 for RGB
+      final seq = encoder.encodeRgb(
+        width: 10,
+        height: 100,
+        rgbData: original,
+        compress: true,
+      );
+      final semicolon = seq.indexOf(';');
+      final terminator = seq.indexOf('\x1b\\');
+      final payload = seq.substring(semicolon + 1, terminator);
+      final decoded = base64.decode(payload);
+      final decompressed = zlib.decode(decoded);
+      expect(decompressed, equals(original));
+    });
+
+    test('encode RGB with compression reduces payload size', () {
+      final data = List.generate(9999, (_) => 255);
+      final uncompressed = encoder.encodeRgb(width: 100, height: 100, rgbData: data);
+      final compressed = encoder.encodeRgb(width: 100, height: 100, rgbData: data, compress: true);
+      expect(compressed.length, lessThan(uncompressed.length));
+    });
+
     test('delete all images', () {
       final result = encoder.deleteAll();
       expect(result, contains('a=d'));
@@ -43,6 +111,27 @@ void main() {
       final result = encoder.deleteImage(5);
       expect(result, contains('a=d'));
       expect(result, contains('i=5'));
+    });
+
+    test('delete by z-index includes z value', () {
+      final result = encoder.deleteByZIndex(-1);
+      expect(result, contains('a=d'));
+      expect(result, contains('d=Z'));
+      expect(result, contains('z=-1'));
+    });
+
+    test('delete at position includes coordinates', () {
+      final result = encoder.deleteAtPosition(10, 20);
+      expect(result, contains('a=d'));
+      expect(result, contains('d=p'));
+      expect(result, contains('x=10'));
+      expect(result, contains('y=20'));
+    });
+
+    test('query support generates correct sequence', () {
+      final result = encoder.querySupport();
+      expect(result, contains('a=q'));
+      expect(result, contains('f=24'));
     });
 
     // ============ Animation Tests ============
@@ -62,10 +151,26 @@ void main() {
       final result = encoder.transmitFrame(
         imageId: 1,
         frameNumber: 1,
-        frameData: [],
+        frameData: [0, 1, 2, 3],
         compress: true,
       );
       expect(result, contains('o=z'));
+    });
+
+    test('transmit frame compression round-trips correctly', () {
+      final original = List.generate(500, (_) => 42);
+      final seq = encoder.transmitFrame(
+        imageId: 1,
+        frameNumber: 1,
+        frameData: original,
+        compress: true,
+      );
+      final semicolon = seq.indexOf(';');
+      final terminator = seq.indexOf('\x1b\\');
+      final payload = seq.substring(semicolon + 1, terminator);
+      final decoded = base64.decode(payload);
+      final decompressed = zlib.decode(decoded);
+      expect(decompressed, equals(original));
     });
 
     test('transmit frame with more chunks flag', () {
@@ -172,6 +277,18 @@ void main() {
       expect(result, contains('P=3'));
     });
 
+    // ============ Delete Region Tests ============
+
+    test('deleteInRegion includes end coordinates', () {
+      final result = encoder.deleteInRegion(3, 4, 10, 20);
+      expect(result, contains('a=d'));
+      expect(result, contains('d=r'));
+      expect(result, contains('x=3'));
+      expect(result, contains('y=4'));
+      expect(result, contains('X=10'));
+      expect(result, contains('Y=20'));
+    });
+
     // ============ Chunking Tests ============
 
     test('chunk data divides into correct number of chunks', () {
@@ -210,6 +327,109 @@ void main() {
       expect(KittyAnimationLoop.loop.value, equals(0));
       expect(KittyAnimationLoop.once.value, equals(1));
       expect(KittyAnimationLoop.bounce.value, equals(2));
+    });
+  });
+
+  group('KittyGraphicsFormat enum', () {
+    test('has correct values', () {
+      expect(KittyGraphicsFormat.rgba.value, equals(32));
+      expect(KittyGraphicsFormat.rgb.value, equals(24));
+      expect(KittyGraphicsFormat.png.value, equals(100));
+    });
+  });
+
+  group('KittyGraphicsCompression enum', () {
+    test('has correct values', () {
+      expect(KittyGraphicsCompression.none.value, equals(''));
+      expect(KittyGraphicsCompression.deflate.value, equals('z'));
+    });
+  });
+
+  group('KittyGraphicsTransmission enum', () {
+    test('has correct values', () {
+      expect(KittyGraphicsTransmission.direct.value, equals('d'));
+      expect(KittyGraphicsTransmission.file.value, equals('f'));
+      expect(KittyGraphicsTransmission.temporaryFile.value, equals('t'));
+      expect(KittyGraphicsTransmission.sharedMemory.value, equals('s'));
+    });
+  });
+
+  group('KittyCursorMovement enum', () {
+    test('has correct values', () {
+      expect(KittyCursorMovement.autoMove.value, equals(0));
+      expect(KittyCursorMovement.noMove.value, equals(1));
+    });
+  });
+
+  group('KittyGraphicsLayer enum', () {
+    test('has correct values', () {
+      expect(KittyGraphicsLayer.belowText.value, equals(-1));
+      expect(KittyGraphicsLayer.defaultLayer.value, equals(0));
+      expect(KittyGraphicsLayer.aboveText.value, equals(1));
+    });
+  });
+
+  group('KittyAnimationAction enum', () {
+    test('has correct values', () {
+      expect(KittyAnimationAction.create.value, equals('c'));
+      expect(KittyAnimationAction.play.value, equals('p'));
+      expect(KittyAnimationAction.pause.value, equals('P'));
+      expect(KittyAnimationAction.clear.value, equals('C'));
+    });
+  });
+
+  group('KittyGraphicsPlaceholders', () {
+    test('getPlaceholder with 1x1 returns zero-width space', () {
+      expect(KittyGraphicsPlaceholders.getPlaceholder(widthInCells: 1), equals('\u200B'));
+    });
+
+    test('getPlaceholder with multi-cell returns block characters with newlines', () {
+      final result = KittyGraphicsPlaceholders.getPlaceholder(widthInCells: 3, heightInCells: 2);
+      expect(result, equals('\u2591\u2591\u2591\n\u2591\u2591\u2591\n'));
+    });
+
+    test('transparent returns zero-width space', () {
+      expect(KittyGraphicsPlaceholders.transparent, equals('\u200B'));
+    });
+
+    test('singleCell returns full block character', () {
+      expect(KittyGraphicsPlaceholders.singleCell, equals('\u2588'));
+    });
+  });
+
+  group('KittyGraphicsEncoder - Base64 Edge Cases', () {
+    const encoder = KittyGraphicsEncoder();
+
+    test('encodeBase64 with empty data returns empty string', () {
+      expect(encoder.encodeBase64([]), equals(''));
+    });
+
+    test('encodeBase64 with 1-byte data adds proper padding', () {
+      // Single byte 0x41 = 'A' -> standard base64 'QQ=='
+      final result = encoder.encodeBase64([0x41]);
+      expect(result, equals('QQ=='));
+    });
+
+    test('encodeBase64 with 2-byte data adds proper padding', () {
+      // Two bytes 0x41, 0x42 = 'AB' -> standard base64 'QUI='
+      final result = encoder.encodeBase64([0x41, 0x42]);
+      expect(result, equals('QUI='));
+    });
+
+    test('encodeBase64 matches standard library output', () {
+      final data = List.generate(256, (i) => i);
+      final result = encoder.encodeBase64(data);
+      final expected = base64.encode(data);
+      expect(result, equals(expected));
+    });
+  });
+
+  group('KittyGraphicsEncoder - Chunking Edge Cases', () {
+    const encoder = KittyGraphicsEncoder();
+
+    test('chunkData with empty data returns empty list', () {
+      final chunks = encoder.chunkData([]);
+      expect(chunks, isEmpty);
     });
   });
 }

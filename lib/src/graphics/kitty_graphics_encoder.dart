@@ -3,6 +3,8 @@
 /// Reference: doc/kitty/docs/graphics-protocol.rst
 library kitty_protocol_graphics_encoder;
 
+import 'dart:io' show zlib;
+
 /// Image format types
 enum KittyGraphicsFormat {
   /// 32-bit RGBA (default)
@@ -124,9 +126,9 @@ enum KittyGraphicsLayer {
   const KittyGraphicsLayer(this.value);
 }
 
-/// Placeholder for Kitty Graphics Encoder
+/// Encoder for the Kitty Graphics Protocol
 ///
-/// This is a placeholder implementation. Full implementation will include:
+/// Supports:
 /// - Image transmission (RGB, RGBA, PNG)
 /// - Compression support (ZLIB deflate)
 /// - Multiple transmission mediums (direct, file, shared memory)
@@ -225,7 +227,7 @@ class KittyGraphicsEncoder {
   /// Create a RGBA image transmission sequence
   ///
   /// Per protocol line 281:
-  ///   <ESC>_Gf=24,s=10,v=20;<payload><ESC>\
+  ///   <ESC>_Gf=32,s=10,v=20;<payload><ESC>\
   String encodeRgba({
     required int width,
     required int height,
@@ -241,12 +243,8 @@ class KittyGraphicsEncoder {
       if (imageId != null) 'i': imageId,
     };
     final controlData = buildControlData(params);
-    var data = rgbaData;
-    if (compress) {
-      // TODO: Implement compression
-    }
-    final payload = encodeBase64(data);
-    return buildSequence(controlData: controlData, payload: payload);
+    final payload = compress ? _compress(rgbaData) : rgbaData;
+    return buildSequence(controlData: controlData, payload: encodeBase64(payload));
   }
 
   /// Create an RGB image transmission sequence
@@ -265,12 +263,8 @@ class KittyGraphicsEncoder {
       if (imageId != null) 'i': imageId,
     };
     final controlData = buildControlData(params);
-    var data = rgbData;
-    if (compress) {
-      // TODO: Implement compression
-    }
-    final payload = encodeBase64(data);
-    return buildSequence(controlData: controlData, payload: payload);
+    final payload = compress ? _compress(rgbData) : rgbData;
+    return buildSequence(controlData: controlData, payload: encodeBase64(payload));
   }
 
   /// Create a delete command
@@ -293,12 +287,17 @@ class KittyGraphicsEncoder {
   }
 
   /// Delete all images in cell range
+  ///
+  /// Per graphics-protocol.rst (region delete extension):
+  ///   <ESC>_Ga=d,d=r,x=3,y=4,X=10,Y=20<ESC>\
   String deleteInRegion(int startX, int startY, int endX, int endY) {
     final params = <String, dynamic>{
       'a': 'd',
       'd': 'r',
       'x': startX,
       'y': startY,
+      'X': endX,
+      'Y': endY,
     };
     return buildSequence(controlData: buildControlData(params), payload: '');
   }
@@ -307,12 +306,11 @@ class KittyGraphicsEncoder {
   ///
   /// Per graphics-protocol.rst line 785:
   ///   <ESC>_Ga=d,d=Z,z=-1<ESC>\
-  String deleteByZIndex(int zIndex, {bool freeData = true}) {
+  String deleteByZIndex(int zIndex) {
     final params = <String, dynamic>{
       'a': 'd',
       'd': 'Z',
       'z': zIndex,
-      if (!freeData) 'f': 0,
     };
     return buildSequence(controlData: buildControlData(params), payload: '');
   }
@@ -321,13 +319,12 @@ class KittyGraphicsEncoder {
   ///
   /// Per graphics-protocol.rst line 786:
   ///   <ESC>_Ga=d,d=p,x=3,y=4<ESC>\
-  String deleteAtPosition(int x, int y, {bool freeData = true}) {
+  String deleteAtPosition(int x, int y) {
     final params = <String, dynamic>{
       'a': 'd',
       'd': 'p',
       'x': x,
       'y': y,
-      if (!freeData) 'f': 0,
     };
     return buildSequence(controlData: buildControlData(params), payload: '');
   }
@@ -673,9 +670,12 @@ class KittyGraphicsEncoder {
   // ============ Compression Helper ============
 
   /// Compress data using zlib deflate
+  ///
+  /// Per graphics-protocol.rst line 305-312:
+  /// The payload is compressed using deflate (prior to base64 encoding).
   List<int> _compress(List<int> data) {
-    // Placeholder - in full implementation use dart:zlib
-    return data;
+    if (data.isEmpty) return data;
+    return zlib.encode(data);
   }
 }
 

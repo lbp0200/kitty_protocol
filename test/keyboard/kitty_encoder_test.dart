@@ -200,6 +200,19 @@ void main() {
       expect(result, startsWith('\x1b[>'));
     });
 
+    test('extended mode without reportEvent still uses CSI > format', () {
+      const encoder = KittyKeyboardEncoder(
+        flags: KittyKeyboardEncoderFlags(reportAlternateKeys: true),
+      );
+      const event = SimpleKeyEvent(
+        logicalKey: LogicalKeyboardKey.enter,
+      );
+      final result = encoder.encode(event);
+      expect(result, startsWith('\x1b[>'));
+      // Without reportEvent, event_type is omitted
+      expect(result, matches(r'^\x1b\[>\d+;\d+;\d+u$'));
+    });
+
     test('encode F2-F12 produce correct sequences', () {
       const encoder = KittyKeyboardEncoder();
       expect(encoder.encode(const SimpleKeyEvent(logicalKey: LogicalKeyboardKey.f2)), equals('\x1b[12;1u'));
@@ -390,6 +403,18 @@ void main() {
       );
       const event = SimpleKeyEvent(
         logicalKey: LogicalKeyboardKey.keyA,
+        modifiers: {SimpleModifier.control},
+      );
+      final result = encoder.encode(event);
+      expect(result, equals(''));
+    });
+
+    test('deferToSystemOnComplexInput defers for Ctrl+Space', () {
+      const encoder = KittyKeyboardEncoder(
+        flags: KittyKeyboardEncoderFlags(deferToSystemOnComplexInput: true),
+      );
+      const event = SimpleKeyEvent(
+        logicalKey: LogicalKeyboardKey.space,
         modifiers: {SimpleModifier.control},
       );
       final result = encoder.encode(event);

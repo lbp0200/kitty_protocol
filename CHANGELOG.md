@@ -1,3 +1,16 @@
+## 1.3.0
+
+- Feat: Add zlib compression support for graphics protocol (encodeRgba/encodeRgb with compress: true)
+- Fix: Clipboard osc52Read primary selection now returns 'p' instead of 'c'
+- Fix: Notifications 'id' parameter no longer silently overwritten by 'sessionId'
+- Fix: Keyboard \_isPrintableKey now uses keyLabel for reliable cross-platform detection
+- Fix: Graphics deleteInRegion now includes endX/endY in output
+- Fix: Remove dead code (keyboard unreachable branch, graphics freeData params)
+- Test: Add 27 tests for KittyEncoderBase/KittyProtocolConstants
+- Test: Add tests for graphics enums, placeholders, Base64 edge cases, chunking edge cases
+- Test: Add tests for deleteByZIndex, deleteAtPosition, querySupport
+- Test: Add keyboard extended mode without reportEvent coverage
+
 ## 1.2.3
 
 - Ci: Use dart-lang/setup-dart reusable workflow for OIDC publishing

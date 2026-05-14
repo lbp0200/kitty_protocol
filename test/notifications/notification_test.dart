@@ -35,6 +35,17 @@ void main() {
       expect(result, contains('i=my-id'));
     });
 
+    test('send with id and sessionId uses id', () {
+      final result = encoder.send(title: 'Test', id: 'myid', sessionId: 'session123');
+      expect(result, contains('i=myid'));
+      expect(result, isNot(contains('i=session123')));
+    });
+
+    test('send with only sessionId uses sessionId as id', () {
+      final result = encoder.send(title: 'Test', sessionId: 'session123');
+      expect(result, contains('i=session123'));
+    });
+
     test('send with urgency generates correct sequence', () {
       final result = encoder.send(
         title: 'Test',

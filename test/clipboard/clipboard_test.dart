@@ -20,7 +20,12 @@ void main() {
 
     test('osc52Read with clipboard location', () {
       final result = encoder.osc52Read(location: KittyClipboardLocation.clipboard);
-      expect(result, contains('\x1b]52;'));
+      expect(result, contains('\x1b]52;c;'));
+    });
+
+    test('osc52Read with primary location uses p', () {
+      final result = encoder.osc52Read(location: KittyClipboardLocation.primary);
+      expect(result, contains('\x1b]52;p;'));
     });
 
     test('osc52Write generates correct sequence', () {

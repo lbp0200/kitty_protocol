@@ -96,7 +96,7 @@ class KittyClipboardEncoder {
   /// Note: For reading, the payload is typically empty or contains the letter 'c'
   String osc52Read({KittyClipboardLocation location = KittyClipboardLocation.clipboard}) {
     // For OSC 52, 'c' means read from clipboard
-    final locationChar = location == KittyClipboardLocation.primary ? 'c' : 'c';
+    final locationChar = location == KittyClipboardLocation.primary ? 'p' : 'c';
     return '\x1b]52;$locationChar;\x1b\\';
   }
 

@@ -116,24 +116,14 @@ class KittyKeyboardEncoder {
       sequence = '\x1b[$effectiveKeyCode;${modifiers}u';
     }
 
-    // Handle key release events in non-extended mode (using ~ prefix)
-    // Note: In extended mode with reportEvent, we use event_type instead
-    if (!flags.isExtendedMode && flags.reportEvent && event.isKeyUp) {
-      sequence = '~$sequence';
-    }
-
     return sequence;
   }
 
   bool _isPrintableKey(LogicalKeyboardKey key) {
-    // Check if key is a printable character (A-Z, a-z, 0-9, symbols)
     final keyLabel = key.keyLabel;
-    if (keyLabel.isEmpty) return false;
-
-    // Check for alphanumeric and common printable characters
-    final code = key.keyId;
-    // Printable ASCII range: 0x1D (29) to 0x7E (126)
-    return (code >= 0x1D && code <= 0x7E);
+    if (keyLabel.isEmpty || keyLabel.length != 1) return false;
+    final code = keyLabel.codeUnitAt(0);
+    return (code >= 0x20 && code <= 0x7E);
   }
 
   int _extractModifiers(SimpleKeyEvent event) {
