@@ -26,6 +26,22 @@ void main() {
         expect(result, contains('id=test123'));
       });
 
+      test('startSendSession with bypassHash', () {
+        final result = encoder.startSendSession(
+          sessionId: 'test123',
+          bypassHash: 'myhash',
+        );
+        expect(result, contains('pw=myhash'));
+      });
+
+      test('startSendSession with quiet level', () {
+        final result = encoder.startSendSession(
+          sessionId: 'test123',
+          quiet: KittyQuietLevel.silent,
+        );
+        expect(result, contains('q=2'));
+      });
+
       test('startReceiveSession with path count', () {
         final result = encoder.startReceiveSession(
           sessionId: 'recv001',
@@ -35,6 +51,15 @@ void main() {
         expect(result, contains('ac=receive'));
         expect(result, contains('id=recv001'));
         expect(result, contains('sz=3'));
+      });
+
+      test('startReceiveSession with bypassHash', () {
+        final result = encoder.startReceiveSession(
+          sessionId: 'recv001',
+          pathCount: 2,
+          bypassHash: 'secret',
+        );
+        expect(result, contains('pw=secret'));
       });
 
       test('cancelSession generates cancel action', () {
@@ -77,6 +102,26 @@ void main() {
         expect(result, contains('ft=directory'));
       });
 
+      test('sendFileMetadata with modification time', () {
+        final result = encoder.sendFileMetadata(
+          sessionId: 'sess1',
+          fileId: 'f1',
+          destinationPath: '/path/to/file',
+          modificationTime: 1700000000,
+        );
+        expect(result, contains('mod=1700000000'));
+      });
+
+      test('sendFileMetadata with permissions', () {
+        final result = encoder.sendFileMetadata(
+          sessionId: 'sess1',
+          fileId: 'f1',
+          destinationPath: '/path/to/file',
+          permissions: 420,
+        );
+        expect(result, contains('prm=420'));
+      });
+
       test('sendFileMetadata with compression', () {
         final result = encoder.sendFileMetadata(
           sessionId: 'sess1',
@@ -85,6 +130,40 @@ void main() {
           compression: KittyFileCompression.zlib,
         );
 
+        expect(result, contains('zip=zlib'));
+      });
+    });
+
+    group('Request File Commands', () {
+      test('requestFile generates correct sequence', () {
+        final result = encoder.requestFile(
+          sessionId: 'sess1',
+          fileId: 'f1',
+          filePath: '/home/user/file.txt',
+        );
+        expect(result, contains('ac=file'));
+        expect(result, contains('id=sess1'));
+        expect(result, contains('fid=f1'));
+        expect(result, contains('n='));
+      });
+
+      test('requestFile with rsync transmission', () {
+        final result = encoder.requestFile(
+          sessionId: 'sess1',
+          fileId: 'f1',
+          filePath: '/path/to/file',
+          transmissionType: KittyTransmissionType.rsync,
+        );
+        expect(result, contains('tt=rsync'));
+      });
+
+      test('requestFile with compression', () {
+        final result = encoder.requestFile(
+          sessionId: 'sess1',
+          fileId: 'f1',
+          filePath: '/path/to/file',
+          compression: KittyFileCompression.zlib,
+        );
         expect(result, contains('zip=zlib'));
       });
     });
@@ -135,6 +214,15 @@ void main() {
         expect(result, contains('ac=end_data'));
         // Data should be base64 encoded: [1,2,3,4,5] -> AQIDBAU=
         expect(result, contains('d=AQIDBAU='));
+      });
+
+      test('sendEndOfData without trailing data sends empty data', () {
+        final result = encoder.sendEndOfData(
+          sessionId: 'sess1',
+          fileId: 'f1',
+        );
+        expect(result, contains('ac=end_data'));
+        expect(result, contains('d='));
       });
     });
 
@@ -216,13 +304,18 @@ void main() {
     group('Response Parsing', () {
       test('parseResponse extracts key-value pairs', () {
         // Simulate a response: <OSC> 5113 ; ac=status ; id=test ; st=OK <ST>
-        final response = '\x1b]5113;ac=status;id=test;st=OK\x1b\\';
+        const response = '\x1b]5113;ac=status;id=test;st=OK\x1b\\';
 
         final parsed = encoder.parseResponse(response);
 
         expect(parsed['ac'], equals('status'));
         expect(parsed['id'], equals('test'));
         expect(parsed['st'], equals('OK'));
+      });
+
+      test('parseResponse returns empty map for invalid format', () {
+        final result = encoder.parseResponse('not a valid protocol response');
+        expect(result, isEmpty);
       });
 
       test('isSuccessResponse detects OK status', () {

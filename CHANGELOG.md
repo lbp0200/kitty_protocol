@@ -1,3 +1,16 @@
+## 1.3.1
+
+- Test: Add 138 tests across all modules (581 total), line coverage 77.8% → 97.9%
+- Test: Add comprehensive C0 control code mapping tests (all 18 mappings)
+- Test: Cover all remote control methods (35+ previously untested)
+- Test: Cover graphics query/placement/transmitAndDisplay methods
+- Test: Cover error paths (invalid hex/OKLCH/LAB parsing)
+- Test: Cover edge cases (empty text, metadata-only, invalid formats)
+- Chore: Add analysis_options.yaml with Flutter lint configuration
+- Chore: Fix .gitignore to exclude docs/kitty/ directory
+- Fix: Remove unnecessary braces in string interpolation
+- Fix: Rename local variable with leading underscore in graphics encoder
+
 ## 1.3.0
 
 - Feat: Add zlib compression support for graphics protocol (encodeRgba/encodeRgb with compress: true)

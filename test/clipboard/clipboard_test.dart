@@ -64,6 +64,22 @@ void main() {
       expect(result, contains('id='));
     });
 
+    test('startRead with password', () {
+      final result = encoder.startRead(
+        mimeTypes: ['text/plain'],
+        password: 'secret',
+      );
+      expect(result, contains('pw='));
+    });
+
+    test('startRead with name', () {
+      final result = encoder.startRead(
+        mimeTypes: ['text/plain'],
+        name: 'MyApp',
+      );
+      expect(result, contains('name='));
+    });
+
     test('queryAvailableTypes generates correct sequence', () {
       final result = encoder.queryAvailableTypes();
       expect(result, contains('\x1b]5522;'));
@@ -71,10 +87,30 @@ void main() {
       expect(result, contains('Lg==')); // "." base64 encoded
     });
 
+    test('queryAvailableTypes with sessionId', () {
+      final result = encoder.queryAvailableTypes(sessionId: 's1');
+      expect(result, contains('id=s1'));
+    });
+
     test('startWrite generates correct sequence', () {
       final result = encoder.startWrite();
       expect(result, contains('\x1b]5522;'));
       expect(result, contains('type=write'));
+    });
+
+    test('startWrite with sessionId', () {
+      final result = encoder.startWrite(sessionId: 's1');
+      expect(result, contains('id=s1'));
+    });
+
+    test('startWrite with password', () {
+      final result = encoder.startWrite(password: 'pass');
+      expect(result, contains('pw='));
+    });
+
+    test('startWrite with name', () {
+      final result = encoder.startWrite(name: 'app');
+      expect(result, contains('name='));
     });
 
     test('sendDataChunk generates correct sequence', () {
@@ -130,6 +166,17 @@ void main() {
       expect(encoder.isSuccessResponse({'status': 'DONE'}), true);
       expect(encoder.isSuccessResponse({'status': 'DATA'}), true);
       expect(encoder.isSuccessResponse({'status': 'ERROR'}), false);
+    });
+
+    test('parseResponse returns empty map for invalid format', () {
+      final result = encoder.parseResponse('not valid');
+      expect(result, isEmpty);
+    });
+
+    test('getStatus returns status value', () {
+      expect(encoder.getStatus({'status': 'OK'}), 'OK');
+      expect(encoder.getStatus({'status': 'ERROR:denied'}), 'ERROR:denied');
+      expect(encoder.getStatus({}), '');
     });
   });
 

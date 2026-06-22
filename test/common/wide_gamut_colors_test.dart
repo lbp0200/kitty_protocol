@@ -29,6 +29,20 @@ void main() {
       final result = KittyWideGamutColor.fromHex('#ff0000ff');
       expect(result, '2;255;0;0');
     });
+
+    test('fromHex throws on invalid hex format', () {
+      expect(
+        () => KittyWideGamutColor.fromHex('#ABCDE'),
+        throwsA(isA<ArgumentError>()),
+      );
+    });
+
+    test('fromHex throws on non-hex characters', () {
+      expect(
+        () => KittyWideGamutColor.fromHex('#XYZ'),
+        throwsA(isA<FormatException>()),
+      );
+    });
   });
 
   group('KittyWideGamutColor - OKLCH Colors', () {
@@ -62,6 +76,13 @@ void main() {
       final result = KittyWideGamutColor.parseOklch('oklch(0.9 0.05 140)');
       expect(result, contains('4;'));
     });
+
+    test('parseOklch throws on invalid format', () {
+      expect(
+        () => KittyWideGamutColor.parseOklch('oklch(bad)'),
+        throwsA(isA<ArgumentError>()),
+      );
+    });
   });
 
   group('KittyWideGamutColor - LAB Colors', () {
@@ -82,6 +103,13 @@ void main() {
     test('parseLab parses string format', () {
       final result = KittyWideGamutColor.parseLab('lab(20 5 -10)');
       expect(result, contains('5;'));
+    });
+
+    test('parseLab throws on invalid format', () {
+      expect(
+        () => KittyWideGamutColor.parseLab('lab(bad)'),
+        throwsA(isA<ArgumentError>()),
+      );
     });
   });
 

@@ -125,7 +125,7 @@ class KittyUnderline {
       sequences.add('\x1b[59m');
     } else if (colorRed != null && colorGreen != null && colorBlue != null) {
       // True color: CSI 58:2:r:g:bm
-      sequences.add('\x1b[58:2:${colorRed}:${colorGreen}:${colorBlue}m');
+      sequences.add('\x1b[58:2:$colorRed:$colorGreen:${colorBlue}m');
     } else if (colorValue != null) {
       // 256 color: CSI 58:5:cm
       sequences.add('\x1b[58:5:${colorValue}m');

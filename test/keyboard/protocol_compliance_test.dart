@@ -207,6 +207,104 @@ void main() {
       expect(KittyKeyCodes.applyCtrlMapping(97, false, false), equals(97));
       expect(KittyKeyCodes.applyCtrlMapping(13, false, false), equals(13));
     });
+
+    // ============ Numbers ============
+
+    test('Ctrl mapping: 0 (48) stays 48 (no mapping)', () {
+      expect(KittyKeyCodes.applyCtrlMapping(48, true, false), equals(48));
+    });
+
+    test('Ctrl mapping: 1 (49) stays 49 (no mapping)', () {
+      expect(KittyKeyCodes.applyCtrlMapping(49, true, false), equals(49));
+    });
+
+    test('Ctrl mapping: 2 (50) -> 0 (NUL)', () {
+      expect(KittyKeyCodes.applyCtrlMapping(50, true, false), equals(0));
+    });
+
+    test('Ctrl mapping: 3 (51) -> 27 (ESC)', () {
+      expect(KittyKeyCodes.applyCtrlMapping(51, true, false), equals(27));
+    });
+
+    test('Ctrl mapping: 4 (52) -> 28 (FS)', () {
+      expect(KittyKeyCodes.applyCtrlMapping(52, true, false), equals(28));
+    });
+
+    test('Ctrl mapping: 5 (53) -> 29 (GS)', () {
+      expect(KittyKeyCodes.applyCtrlMapping(53, true, false), equals(29));
+    });
+
+    test('Ctrl mapping: 6 (54) -> 30 (RS)', () {
+      expect(KittyKeyCodes.applyCtrlMapping(54, true, false), equals(30));
+    });
+
+    test('Ctrl mapping: 7 (55) -> 31 (US)', () {
+      expect(KittyKeyCodes.applyCtrlMapping(55, true, false), equals(31));
+    });
+
+    test('Ctrl mapping: 8 (56) -> 127 (DEL)', () {
+      expect(KittyKeyCodes.applyCtrlMapping(56, true, false), equals(127));
+    });
+
+    test('Ctrl mapping: 9 (57) stays 57 (no mapping)', () {
+      expect(KittyKeyCodes.applyCtrlMapping(57, true, false), equals(57));
+    });
+
+    // ============ Punctuation ============
+
+    test('Ctrl mapping: / (47) -> 31 (US)', () {
+      expect(KittyKeyCodes.applyCtrlMapping(47, true, false), equals(31));
+    });
+
+    test('Ctrl mapping: ? (63) -> 127 (DEL)', () {
+      expect(KittyKeyCodes.applyCtrlMapping(63, true, false), equals(127));
+    });
+
+    test('Ctrl mapping: @ (64) -> 0 (NUL)', () {
+      expect(KittyKeyCodes.applyCtrlMapping(64, true, false), equals(0));
+    });
+
+    test('Ctrl mapping: [ (91) -> 27 (ESC)', () {
+      expect(KittyKeyCodes.applyCtrlMapping(91, true, false), equals(27));
+    });
+
+    test('Ctrl mapping: backslash (92) -> 28 (FS)', () {
+      expect(KittyKeyCodes.applyCtrlMapping(92, true, false), equals(28));
+    });
+
+    test('Ctrl mapping: ] (93) -> 29 (GS)', () {
+      expect(KittyKeyCodes.applyCtrlMapping(93, true, false), equals(29));
+    });
+
+    test('Ctrl mapping: ^ (94) -> 30 (RS)', () {
+      expect(KittyKeyCodes.applyCtrlMapping(94, true, false), equals(30));
+    });
+
+    test('Ctrl mapping: _ (95) -> 31 (US)', () {
+      expect(KittyKeyCodes.applyCtrlMapping(95, true, false), equals(31));
+    });
+
+    test('Ctrl mapping: ~ (126) -> 30 (RS)', () {
+      expect(KittyKeyCodes.applyCtrlMapping(126, true, false), equals(30));
+    });
+
+    // ============ Additional Letter Mappings ============
+
+    test('Ctrl mapping: d (100) -> 4 (C0 EOT)', () {
+      expect(KittyKeyCodes.applyCtrlMapping(100, true, false), equals(4));
+    });
+
+    test('Ctrl mapping: e (101) -> 5 (C0 ENQ)', () {
+      expect(KittyKeyCodes.applyCtrlMapping(101, true, false), equals(5));
+    });
+
+    test('Ctrl mapping: y (121) -> 25 (C0 EM)', () {
+      expect(KittyKeyCodes.applyCtrlMapping(121, true, false), equals(25));
+    });
+
+    test('Ctrl mapping: tilde via letter (126) -> 30 (RS)', () {
+      expect(KittyKeyCodes.applyCtrlMapping(126, true, false), equals(30));
+    });
   });
 
   group('Protocol Compliance: Event Types', () {

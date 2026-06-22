@@ -174,10 +174,22 @@ void main() {
       expect(result, contains('h'));
     });
 
+    test('disableButtonEvents generates disable sequence', () {
+      final result = KittyMouseTracking.disableButtonEvents();
+      expect(result, contains('1002'));
+      expect(result, contains('l'));
+    });
+
     test('enableAllEvents generates all events sequence', () {
       final result = KittyMouseTracking.enableAllEvents();
       expect(result, contains('1003'));
       expect(result, contains('h'));
+    });
+
+    test('disableAllEvents generates disable sequence', () {
+      final result = KittyMouseTracking.disableAllEvents();
+      expect(result, contains('1003'));
+      expect(result, contains('l'));
     });
   });
 

@@ -191,7 +191,7 @@ class KittyGraphicsEncoder {
   /// Output is always valid Base64 with proper padding
   String encodeBase64(List<int> data) {
     // Use dart:convert for proper Base64 encoding
-    const String _alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+    const String alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
     if (data.isEmpty) return '';
 
@@ -201,10 +201,10 @@ class KittyGraphicsEncoder {
       final b1 = i + 1 < data.length ? data[i + 1] : 0;
       final b2 = i + 2 < data.length ? data[i + 2] : 0;
 
-      buffer.write(_alphabet[(b0 >> 2) & 0x3F]);
-      buffer.write(_alphabet[((b0 << 4) | (b1 >> 4)) & 0x3F]);
-      buffer.write(i + 1 < data.length ? _alphabet[((b1 << 2) | (b2 >> 6)) & 0x3F] : '=');
-      buffer.write(i + 2 < data.length ? _alphabet[b2 & 0x3F] : '=');
+      buffer.write(alphabet[(b0 >> 2) & 0x3F]);
+      buffer.write(alphabet[((b0 << 4) | (b1 >> 4)) & 0x3F]);
+      buffer.write(i + 1 < data.length ? alphabet[((b1 << 2) | (b2 >> 6)) & 0x3F] : '=');
+      buffer.write(i + 2 < data.length ? alphabet[b2 & 0x3F] : '=');
     }
 
     return buffer.toString();

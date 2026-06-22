@@ -52,15 +52,36 @@ void main() {
       expect(result, contains('s=4'));
     });
 
+    test('encode with invalid out-of-range scale is silently ignored', () {
+      final result = encoder.encode(text: 'Test', scale: 99);
+      expect(result, isNot(contains('s=')));
+    });
+
     test('encode with width parameter', () {
       final result = encoder.encode(text: 'Test', width: 5);
       expect(result, contains('w=5'));
+    });
+
+    test('encode with width 0 is valid', () {
+      final result = encoder.encode(text: 'Test', width: 0);
+      expect(result, contains('w=0'));
     });
 
     test('encode with numerator and denominator', () {
       final result = encoder.encode(text: 'Test', numerator: 3, denominator: 4);
       expect(result, contains('n=3'));
       expect(result, contains('d=4'));
+    });
+
+    test('encode with invalid numerator is ignored', () {
+      final result = encoder.encode(text: 'Test', numerator: 99);
+      expect(result, isNot(contains('n=')));
+    });
+
+    test('encode with denominator not greater than numerator is ignored', () {
+      final result = encoder.encode(text: 'Test', numerator: 4, denominator: 2);
+      expect(result, contains('n=4'));
+      expect(result, isNot(contains('d=')));
     });
 
     test('encode with vertical alignment', () {
@@ -99,6 +120,29 @@ void main() {
     test('chunkByWidth splits text correctly', () {
       final chunks = encoder.chunkByWidth('hello world test', 5);
       expect(chunks.length, greaterThan(1));
+    });
+
+    test('chunkByWidth puts multiple words in one chunk when they fit', () {
+      final chunks = encoder.chunkByWidth('hello world test', 11);
+      expect(chunks.length, 2);
+      expect(chunks[0], 'hello world');
+      expect(chunks[1], 'test');
+    });
+
+    test('chunkByWidth handles empty text', () {
+      final chunks = encoder.chunkByWidth('', 10);
+      expect(chunks, isEmpty);
+    });
+
+    test('chunkByWidth handles single word', () {
+      final chunks = encoder.chunkByWidth('hello', 10);
+      expect(chunks.length, 1);
+      expect(chunks[0], 'hello');
+    });
+
+    test('chunkByWidth returns empty when no width', () {
+      // Width 0 means everything should be its own chunk
+      expect(() => encoder.chunkByWidth('hello', 0), returnsNormally);
     });
   });
 

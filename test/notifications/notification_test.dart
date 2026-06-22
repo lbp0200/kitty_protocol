@@ -101,6 +101,46 @@ void main() {
       );
       expect(result, contains('c=1'));
     });
+
+    test('send with notification type', () {
+      final result = encoder.send(
+        title: 'Test',
+        notificationType: 'important',
+      );
+      expect(result, contains('t=important'));
+    });
+
+    test('send with actions', () {
+      final result = encoder.send(
+        title: 'Test',
+        actions: 'report',
+      );
+      expect(result, contains('a=report'));
+    });
+
+    test('send with sound', () {
+      final result = encoder.send(
+        title: 'Test',
+        sound: 'system',
+      );
+      expect(result, contains('s=system'));
+    });
+
+    test('send with encoded body', () {
+      final result = encoder.send(
+        body: 'Hello',
+        encoded: true,
+      );
+      expect(result, contains('p=body'));
+      expect(result, isNot(contains('Hello')));
+    });
+
+    test('send without title or body returns metadata-only sequence', () {
+      final result = encoder.send(id: 'my-id');
+      expect(result, contains('i=my-id'));
+      expect(result, isNot(contains('p=')));
+      expect(result, contains('d=1'));
+    });
   });
 
   group('KittyNotificationEncoder - Close/Query', () {
@@ -123,6 +163,12 @@ void main() {
 
     test('queryAlive generates correct sequence', () {
       final result = encoder.queryAlive();
+      expect(result, contains('p=alive'));
+    });
+
+    test('queryAlive with sessionId', () {
+      final result = encoder.queryAlive(sessionId: 'my-session');
+      expect(result, contains('i=my-session'));
       expect(result, contains('p=alive'));
     });
   });
@@ -214,6 +260,17 @@ void main() {
     test('notify with title generates correct sequence', () {
       final result = KittyNotification777.notify(title: 'Title', body: 'Body');
       expect(result, contains('notify'));
+    });
+
+    test('notify with encode flag URL-encodes title and body', () {
+      final result = KittyNotification777.notify(
+        title: 'Hello World',
+        body: 'Test & More',
+        encode: true,
+      );
+      expect(result, contains('notify'));
+      expect(result, contains('Hello%20World'));
+      expect(result, contains('Test%20%26%20More'));
     });
 
     test('close generates correct sequence', () {

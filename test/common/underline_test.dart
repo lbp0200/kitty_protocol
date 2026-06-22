@@ -78,7 +78,7 @@ void main() {
     });
 
     test('buildString returns concatenated string', () {
-      final underline = KittyUnderline.curly;
+      const underline = KittyUnderline.curly;
       final result = underline.buildString();
       expect(result, isA<String>());
       expect(result, contains('\x1b[4:3m'));
@@ -131,6 +131,27 @@ void main() {
     test('color mode values are correct', () {
       expect(KittyUnderlineColorMode.color256.value, 5);
       expect(KittyUnderlineColorMode.trueColor.value, 2);
+    });
+  });
+
+  group('KittyUnderline - toString', () {
+    test('toString returns style and color info', () {
+      final underline = KittyUnderline.straight.withColor(255, 0, 0);
+      final str = underline.toString();
+      expect(str, startsWith('KittyUnderline('));
+      expect(str, contains('style:'));
+      expect(str, contains('rgb:'));
+    });
+
+    test('toString with 256-color', () {
+      final underline = KittyUnderline.curly.withColor256(196);
+      final str = underline.toString();
+      expect(str, contains('256: 196'));
+    });
+
+    test('toString with no style', () {
+      const underline = KittyUnderline.straight;
+      expect(underline.toString(), contains('KittyUnderline'));
     });
   });
 }

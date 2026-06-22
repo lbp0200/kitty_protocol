@@ -102,6 +102,11 @@ void main() {
       expect(compressed.length, lessThan(uncompressed.length));
     });
 
+    test('encode RGB with imageId', () {
+      final result = encoder.encodeRgb(width: 10, height: 10, rgbData: [0, 0, 0], imageId: 5);
+      expect(result, contains('i=5'));
+    });
+
     test('delete all images', () {
       final result = encoder.deleteAll();
       expect(result, contains('a=d'));
@@ -132,6 +137,166 @@ void main() {
       final result = encoder.querySupport();
       expect(result, contains('a=q'));
       expect(result, contains('f=24'));
+    });
+
+    // ============ Query Commands ============
+
+    test('queryImage generates correct sequence', () {
+      final result = encoder.queryImage(42);
+      expect(result, contains('a=q'));
+      expect(result, contains('d=i'));
+      expect(result, contains('i=42'));
+    });
+
+    test('queryImageByNumber generates correct sequence', () {
+      final result = encoder.queryImageByNumber(7);
+      expect(result, contains('a=q'));
+      expect(result, contains('d=I'));
+      expect(result, contains('I=7'));
+    });
+
+    test('queryPlacement generates correct sequence', () {
+      final result = encoder.queryPlacement(3);
+      expect(result, contains('a=q'));
+      expect(result, contains('d=p'));
+      expect(result, contains('p=3'));
+    });
+
+    test('queryAtCursor generates correct sequence', () {
+      final result = encoder.queryAtCursor();
+      expect(result, contains('a=q'));
+      expect(result, contains('d=c'));
+    });
+
+    test('queryAllImages generates correct sequence', () {
+      final result = encoder.queryAllImages();
+      expect(result, contains('a=q'));
+      expect(result, contains('d=a'));
+    });
+
+    // ============ Placement ============
+
+    test('placeImage generates correct sequence', () {
+      final result = encoder.placeImage(imageId: 1);
+      expect(result, contains('a=p'));
+      expect(result, contains('i=1'));
+      // C=0 is omitted because buildControlData filters zero values
+      expect(result, isNot(contains('C=')));
+    });
+
+    test('placeImage with all options', () {
+      final result = encoder.placeImage(
+        imageId: 1,
+        placementId: 5,
+        columns: 20,
+        rows: 10,
+        xOffset: 2,
+        yOffset: 3,
+        zIndex: 48,
+        cursorMovement: KittyCursorMovement.noMove,
+      );
+      expect(result, contains('p=5'));
+      expect(result, contains('c=20'));
+      expect(result, contains('r=10'));
+      expect(result, contains('X=2'));
+      expect(result, contains('Y=3'));
+      expect(result, contains('z=48'));
+      expect(result, contains('C=1'));
+    });
+
+    // ============ Transmit and Display ============
+
+    test('transmitAndDisplay generates correct sequence', () {
+      final result = encoder.transmitAndDisplay(imageId: 1);
+      expect(result, contains('a=T'));
+      expect(result, contains('i=1'));
+    });
+
+    test('transmitAndDisplay with all options', () {
+      final result = encoder.transmitAndDisplay(
+        imageId: 1,
+        columns: 40,
+        rows: 20,
+        xOffset: 5,
+        yOffset: 10,
+        zIndex: 99,
+      );
+      expect(result, contains('c=40'));
+      expect(result, contains('r=20'));
+      expect(result, contains('X=5'));
+      expect(result, contains('Y=10'));
+      expect(result, contains('z=99'));
+    });
+
+    // ============ Delete with placement ============
+
+    test('deleteImage with placementId', () {
+      final result = encoder.deleteImage(1, placementId: 3);
+      expect(result, contains('a=d'));
+      expect(result, contains('i=1'));
+      expect(result, contains('p=3'));
+    });
+
+    // ============ Composition with coordinates ============
+
+    test('compositionCreate with source/dest coordinates', () {
+      final result = encoder.compositionCreate(
+        sourceImageId: 1,
+        destImageId: 2,
+        sourceColumns: 10,
+        sourceRows: 20,
+        destColumns: 5,
+        destRows: 10,
+        sourceX: 2,
+        sourceY: 3,
+        destX: 1,
+        destY: 0, // Zero value is filtered by buildControlData
+      );
+      expect(result, contains('X=2'));
+      expect(result, contains('Y=3'));
+      expect(result, contains('x=1'));
+      // y=0 is omitted because buildControlData filters zero values
+      expect(result, isNot(contains('y=')));
+    });
+
+    // ============ Virtual Placement with options ============
+
+    test('virtualPlacement with all options', () {
+      final result = encoder.virtualPlacement(
+        imageId: 1,
+        columns: 5,
+        rows: 3,
+        xOffset: 1,
+        yOffset: 2,
+        zIndex: -1,
+      );
+      expect(result, contains('U=1'));
+      expect(result, contains('i=1'));
+      expect(result, contains('c=5'));
+      expect(result, contains('r=3'));
+      expect(result, contains('X=1'));
+      expect(result, contains('Y=2'));
+      expect(result, contains('z=-1'));
+    });
+
+    // ============ Relative Placement with options ============
+
+    test('relativePlacement with parent placement and offsets', () {
+      final result = encoder.relativePlacement(
+        imageId: 1,
+        placementId: 2,
+        parentImageId: 3,
+        parentPlacementId: 4,
+        xOffset: 10,
+        yOffset: 20,
+      );
+      expect(result, contains('a=p'));
+      expect(result, contains('i=1'));
+      expect(result, contains('p=2'));
+      expect(result, contains('P=3'));
+      expect(result, contains('Q=4'));
+      expect(result, contains('X=10'));
+      expect(result, contains('Y=20'));
     });
 
     // ============ Animation Tests ============
@@ -192,6 +357,16 @@ void main() {
       expect(result, contains('a=f'));
       expect(result, contains('f=100'));
       expect(result, contains('I=5'));
+    });
+
+    test('transmit PNG frame with more chunks flag', () {
+      final result = encoder.transmitPngFrame(
+        imageId: 1,
+        frameNumber: 1,
+        pngData: [],
+        moreChunks: true,
+      );
+      expect(result, contains('m=1'));
     });
 
     test('animation create produces correct sequence', () {
