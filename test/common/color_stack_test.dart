@@ -2,9 +2,8 @@
 ///
 /// Tests for Kitty Color Stack encoder (OSC 30001/30101)
 ///
-/// Reference: doc/kitty/docs/color-stack.rst
-library kitty_protocol_color_stack_test;
-
+/// Reference: docs/kitty/docs/color-stack.rst
+library;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kitty_protocol/kitty_protocol.dart';
 

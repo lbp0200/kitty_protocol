@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kitty_protocol/kitty_protocol.dart';
 
 void main() {
-  group('KittyModifierCodes', () {
+  group('KittyKeyboardEncoder - Modifier Codes', () {
     test('Shift has correct bit value', () {
       expect(KittyModifierCodes.shift, equals(1));
     });
@@ -92,9 +92,9 @@ void main() {
   group('KittyKeyboardEncoderFlags', () {
     test('default flags are all false', () {
       const flags = KittyKeyboardEncoderFlags();
-      expect(flags.reportEvent, isFalse);
-      expect(flags.reportAlternateKeys, isFalse);
-      expect(flags.reportAllKeysAsEscape, isFalse);
+      expect(flags.disambiguate, isFalse);
+      expect(flags.reportEvents, isFalse);
+      expect(flags.reportAlternates, isFalse);
     });
 
     test('toCSIValue returns 0 for default flags', () {
@@ -102,31 +102,41 @@ void main() {
       expect(flags.toCSIValue(), equals(0));
     });
 
-    test('toCSIValue returns 1 for reportEvent', () {
-      const flags = KittyKeyboardEncoderFlags(reportEvent: true);
+    test('toCSIValue returns 1 for disambiguate', () {
+      const flags = KittyKeyboardEncoderFlags(disambiguate: true);
       expect(flags.toCSIValue(), equals(1));
     });
 
-    test('toCSIValue returns 2 for reportAlternateKeys', () {
-      const flags = KittyKeyboardEncoderFlags(reportAlternateKeys: true);
+    test('toCSIValue returns 2 for reportEvents', () {
+      const flags = KittyKeyboardEncoderFlags(reportEvents: true);
       expect(flags.toCSIValue(), equals(2));
     });
 
-    test('toCSIValue returns 4 for reportAllKeysAsEscape', () {
-      const flags = KittyKeyboardEncoderFlags(reportAllKeysAsEscape: true);
+    test('toCSIValue returns 4 for reportAlternates', () {
+      const flags = KittyKeyboardEncoderFlags(reportAlternates: true);
       expect(flags.toCSIValue(), equals(4));
+    });
+
+    test('toCSIValue returns 8 for reportAllKeys', () {
+      const flags = KittyKeyboardEncoderFlags(reportAllKeys: true);
+      expect(flags.toCSIValue(), equals(8));
+    });
+
+    test('toCSIValue returns 16 for reportText', () {
+      const flags = KittyKeyboardEncoderFlags(reportText: true);
+      expect(flags.toCSIValue(), equals(16));
     });
 
     test('toCSIValue combines flags correctly', () {
       const flags = KittyKeyboardEncoderFlags(
-        reportEvent: true,
-        reportAlternateKeys: true,
+        disambiguate: true,
+        reportEvents: true,
       );
       expect(flags.toCSIValue(), equals(3)); // 1 + 2
     });
 
     test('isExtendedMode returns true when any flag is set', () {
-      const flags = KittyKeyboardEncoderFlags(reportEvent: true);
+      const flags = KittyKeyboardEncoderFlags(disambiguate: true);
       expect(flags.isExtendedMode, isTrue);
     });
 
@@ -191,7 +201,7 @@ void main() {
 
     test('encode with extended mode uses CSI > format', () {
       const encoder = KittyKeyboardEncoder(
-        flags: KittyKeyboardEncoderFlags(reportEvent: true),
+        flags: KittyKeyboardEncoderFlags(disambiguate: true),
       );
       const event = SimpleKeyEvent(
         logicalKey: LogicalKeyboardKey.enter,
@@ -200,16 +210,16 @@ void main() {
       expect(result, startsWith('\x1b[>'));
     });
 
-    test('extended mode without reportEvent still uses CSI > format', () {
+    test('extended mode without reportEvents still uses CSI > format', () {
       const encoder = KittyKeyboardEncoder(
-        flags: KittyKeyboardEncoderFlags(reportAlternateKeys: true),
+        flags: KittyKeyboardEncoderFlags(disambiguate: true),
       );
       const event = SimpleKeyEvent(
         logicalKey: LogicalKeyboardKey.enter,
       );
       final result = encoder.encode(event);
       expect(result, startsWith('\x1b[>'));
-      // Without reportEvent, event_type is omitted
+      // Without reportEvents, event_type is omitted
       expect(result, matches(r'^\x1b\[>\d+;\d+;\d+u$'));
     });
 
@@ -305,7 +315,7 @@ void main() {
 
     test('withFlags creates new encoder with different flags', () {
       const encoder = KittyKeyboardEncoder();
-      final newEncoder = encoder.withFlags(const KittyKeyboardEncoderFlags(reportEvent: true));
+      final newEncoder = encoder.withFlags(const KittyKeyboardEncoderFlags(disambiguate: true));
       expect(newEncoder.isExtendedMode, isTrue);
       expect(encoder.isExtendedMode, isFalse);
     });
@@ -313,7 +323,7 @@ void main() {
     // Key Event Types Tests (Kitty Protocol)
     test('encode key down in extended mode includes event_type 1', () {
       const encoder = KittyKeyboardEncoder(
-        flags: KittyKeyboardEncoderFlags(reportEvent: true),
+        flags: KittyKeyboardEncoderFlags(reportEvents: true),
       );
       const event = SimpleKeyEvent(
         logicalKey: LogicalKeyboardKey.enter,
@@ -322,13 +332,13 @@ void main() {
       );
       final result = encoder.encode(event);
       // Format: \x1b[>flags;event_type;key;modifiersu
-      // event_type 1 = keyDown, Enter = 13
-      expect(result, equals('\x1b[>1;1;13;1u'));
+      // reportEvents=2, event_type 1 = keyDown, Enter = 13
+      expect(result, equals('\x1b[>2;1;13;1u'));
     });
 
     test('encode key repeat in extended mode includes event_type 2', () {
       const encoder = KittyKeyboardEncoder(
-        flags: KittyKeyboardEncoderFlags(reportEvent: true),
+        flags: KittyKeyboardEncoderFlags(reportEvents: true),
       );
       const event = SimpleKeyEvent(
         logicalKey: LogicalKeyboardKey.enter,
@@ -337,13 +347,13 @@ void main() {
       );
       final result = encoder.encode(event);
       // Format: \x1b[>flags;event_type;key;modifiersu
-      // event_type 2 = keyRepeat, Enter = 13
-      expect(result, equals('\x1b[>1;2;13;1u'));
+      // reportEvents=2, event_type 2 = keyRepeat, Enter = 13
+      expect(result, equals('\x1b[>2;2;13;1u'));
     });
 
     test('encode key up in extended mode includes event_type 3', () {
       const encoder = KittyKeyboardEncoder(
-        flags: KittyKeyboardEncoderFlags(reportEvent: true),
+        flags: KittyKeyboardEncoderFlags(reportEvents: true),
       );
       const event = SimpleKeyEvent(
         logicalKey: LogicalKeyboardKey.enter,
@@ -351,8 +361,8 @@ void main() {
       );
       final result = encoder.encode(event);
       // Format: \x1b[>flags;event_type;key;modifiersu
-      // event_type 3 = keyUp, Enter = 13
-      expect(result, equals('\x1b[>1;3;13;1u'));
+      // reportEvents=2, event_type 3 = keyUp, Enter = 13
+      expect(result, equals('\x1b[>2;3;13;1u'));
     });
 
     test('encode key up in non-extended mode uses ~ prefix', () {
@@ -388,12 +398,12 @@ void main() {
 
     test('encode Backspace in extended mode produces correct sequence', () {
       const encoder = KittyKeyboardEncoder(
-        flags: KittyKeyboardEncoderFlags(reportEvent: true),
+        flags: KittyKeyboardEncoderFlags(reportEvents: true),
       );
       const event = SimpleKeyEvent(logicalKey: LogicalKeyboardKey.backspace);
       final result = encoder.encode(event);
-      // Backspace code is 127, event_type 1 = keyDown
-      expect(result, equals('\x1b[>1;1;127;1u'));
+      // Backspace code is 127, reportEvents=2, event_type 1 = keyDown
+      expect(result, equals('\x1b[>2;1;127;1u'));
     });
 
     // IME/Text Editing Conflict Tests

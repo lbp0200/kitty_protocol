@@ -1,8 +1,6 @@
 /// Kitty Color Stack - Color push/pop for Kitty Protocol
 ///
-/// Reference: doc/kitty/docs/color-stack.rst
-library kitty_protocol_color_stack;
-
+/// Reference: docs/kitty/docs/color-stack.rst
 /// Color stack operations
 enum KittyColorStackOperation {
   /// Push current colors onto stack
@@ -19,24 +17,24 @@ enum KittyColorStackOperation {
 /// Per protocol lines 14-21:
 ///
 /// Push colors:
-///   <ESC>]30001<ESC>\
+///   `<ESC>]30001<ESC>`
 /// Pop colors:
-///   <ESC>]30101<ESC>\
+///   `<ESC>]30101<ESC>`
 class KittyColorStack {
   KittyColorStack._();
 
   /// Push current colors onto stack
   ///
-  /// Per protocol line 16:
-  ///   <ESC>]30001<ESC>\
+/// Per protocol line 16:
+///   `<ESC>]30001<ESC>`
   static String push() {
     return '\x1b]${KittyColorStackOperation.push.oscCode}\x1b\\';
   }
 
   /// Pop colors from stack
   ///
-  /// Per protocol line 17:
-  ///   <ESC>]30101<ESC>\
+/// Per protocol line 17:
+///   `<ESC>]30101<ESC>`
   static String pop() {
     return '\x1b]${KittyColorStackOperation.pop.oscCode}\x1b\\';
   }

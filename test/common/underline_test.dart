@@ -2,9 +2,8 @@
 ///
 /// Tests for Kitty Underline encoder
 ///
-/// Reference: doc/kitty/docs/underlines.rst
-library kitty_protocol_underline_test;
-
+/// Reference: docs/kitty/docs/underlines.rst
+library;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kitty_protocol/kitty_protocol.dart';
 

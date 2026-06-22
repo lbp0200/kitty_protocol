@@ -2,9 +2,8 @@
 ///
 /// Tests for Kitty Remote Control encoder (DCS JSON)
 ///
-/// Reference: doc/kitty/docs/rc_protocol.rst
-library kitty_protocol_remote_control_test;
-
+/// Reference: docs/kitty/docs/rc_protocol.rst
+library;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kitty_protocol/kitty_protocol.dart';
 

@@ -1,8 +1,6 @@
 /// Kitty Pointer Shapes - Mouse pointer shape control for Kitty Protocol
 ///
-/// Reference: doc/kitty/docs/pointer-shapes.rst
-library kitty_protocol_pointer_shapes;
-
+/// Reference: docs/kitty/docs/pointer-shapes.rst
 /// Pointer shape names
 enum KittyPointerShape {
   /// A link/button (CSS: pointer)
@@ -93,15 +91,15 @@ class KittyPointerQueryNames {
 ///
 /// Examples:
 ///   // Set the pointer to a pointing hand
-///   <OSC> 22 ; pointer <ESC>\
+///   `<OSC> 22 ; pointer <ESC>`
 ///   // Reset the pointer to default
-///   <OSC> 22 ; <ESC>\
+///   `<OSC> 22 ; <ESC>`
 ///   // Push a shape onto the stack
-///   <OSC> 22 ; >wait <ESC>\
+///   `<OSC> 22 ; >wait <ESC>`
 ///   // Pop a shape from the stack
-///   <OSC> 22 ; < <ESC>\
+///   `<OSC> 22 ; < <ESC>`
 ///   // Query current shape
-///   <OSC> 22 ; ?__current__ <ESC>\
+///   `<OSC> 22 ; ?__current__ <ESC>`
 class KittyPointerShapes {
   KittyPointerShapes._();
 
@@ -110,24 +108,24 @@ class KittyPointerShapes {
 
   /// Build a set pointer shape sequence
   ///
-  /// Per protocol line 23:
-  ///   <OSC> 22 ; pointer <ESC>\
+/// Per protocol line 23:
+///   `<OSC> 22 ; pointer <ESC>`
   static String set(KittyPointerShape shape) {
     return '\x1b]$oscCode;${shape.value}\x1b\\';
   }
 
   /// Reset to default (no shape)
   ///
-  /// Per protocol line 25:
-  ///   <OSC> 22 ; <ESC>\
+/// Per protocol line 25:
+///   `<OSC> 22 ; <ESC>`
   static String reset() {
     return '\x1b]$oscCode;\x1b\\';
   }
 
   /// Push a shape onto the stack
   ///
-  /// Per protocol line 27:
-  ///   <OSC> 22 ; >wait <ESC>\
+/// Per protocol line 27:
+///   `<OSC> 22 ; >wait <ESC>`
   static String push(List<KittyPointerShape> shapes) {
     final shapeNames = shapes.map((s) => s.value).join(',');
     return '\x1b]$oscCode;>$shapeNames\x1b\\';
@@ -140,16 +138,16 @@ class KittyPointerShapes {
 
   /// Pop a shape from the stack
   ///
-  /// Per protocol line 29:
-  ///   <OSC> 22 ; < <ESC>\
+/// Per protocol line 29:
+///   `<OSC> 22 ; < <ESC>`
   static String pop() {
     return '\x1b]$oscCode;<\x1b\\';
   }
 
   /// Query current shape
   ///
-  /// Per protocol lines 31-32:
-  ///   <OSC> 22 ; ?__current__ <ESC>\
+/// Per protocol lines 31-32:
+///   `<OSC> 22 ; ?__current__ <ESC>`
   static String queryCurrent() {
     return '\x1b]$oscCode;?${KittyPointerQueryNames.current}\x1b\\';
   }
@@ -166,8 +164,8 @@ class KittyPointerShapes {
 
   /// Query support for specific shapes
   ///
-  /// Per protocol lines 79-85:
-  ///   <OSC> 22 ; ?pointer,crosshair <ESC>\
+/// Per protocol lines 79-85:
+///   `<OSC> 22 ; ?pointer,crosshair <ESC>`
   static String querySupport(List<KittyPointerShape> shapes) {
     final shapeNames = shapes.map((s) => s.value).join(',');
     return '\x1b]$oscCode;?$shapeNames\x1b\\';

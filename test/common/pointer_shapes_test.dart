@@ -2,9 +2,8 @@
 ///
 /// Tests for Kitty Pointer Shapes encoder (OSC 22)
 ///
-/// Reference: doc/kitty/docs/pointer-shapes.rst
-library kitty_protocol_pointer_shapes_test;
-
+/// Reference: docs/kitty/docs/pointer-shapes.rst
+library;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kitty_protocol/kitty_protocol.dart';
 

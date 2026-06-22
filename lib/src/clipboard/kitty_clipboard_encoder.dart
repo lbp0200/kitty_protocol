@@ -1,10 +1,9 @@
 /// Kitty Clipboard Encoder - Clipboard operations for Kitty Protocol
 ///
-/// Reference: doc/kitty/docs/clipboard.rst
+/// Reference: docs/kitty/docs/clipboard.rst
 ///
 /// This implements OSC 5522 (extended clipboard protocol) and OSC 52 (basic clipboard).
-library kitty_protocol_clipboard_encoder;
-
+library;
 import 'dart:convert';
 
 /// Clipboard location
@@ -72,10 +71,10 @@ class KittyClipboardMimeTypes {
 /// Implements OSC 5522 for advanced clipboard operations and OSC 52 for basic operations.
 ///
 /// Basic OSC 52 format:
-///   <OSC>52;c;<base64><ST>
+///   `<OSC>52;c;<base64><ST>`
 ///
 /// Extended OSC 5522 format:
-///   <OSC>5522;metadata;payload<ST>
+///   `<OSC>5522;metadata;payload<ST>`
 class KittyClipboardEncoder {
   /// OSC 52 code for basic clipboard
   static const int osc52Code = 52;
@@ -92,7 +91,7 @@ class KittyClipboardEncoder {
 
   /// Build OSC 52 sequence to read from clipboard
   ///
-  /// Format: <OSC>52;c;<base64><ST>
+  /// Format: `<OSC>52;c;<base64><ST>`
   /// Note: For reading, the payload is typically empty or contains the letter 'c'
   String osc52Read({KittyClipboardLocation location = KittyClipboardLocation.clipboard}) {
     // For OSC 52, 'c' means read from clipboard
@@ -102,7 +101,7 @@ class KittyClipboardEncoder {
 
   /// Build OSC 52 sequence to write to clipboard
   ///
-  /// Format: <OSC>52;c;<base64><ST>
+  /// Format: `<OSC>52;c;<base64><ST>`
   String osc52Write(String data, {KittyClipboardLocation location = KittyClipboardLocation.clipboard}) {
     final encoded = base64Encode(utf8.encode(data));
     return '\x1b]52;$location;$encoded\x07';
@@ -137,7 +136,7 @@ class KittyClipboardEncoder {
   /// Start a read request
   ///
   /// Per protocol lines 24-33:
-  ///   <OSC>5522;type=read;<base64 encoded MIME types><ST>
+  ///   `<OSC>5522;type=read;<base64 encoded MIME types><ST>`
   String startRead({
     required List<String> mimeTypes,
     KittyClipboardLocation location = KittyClipboardLocation.clipboard,
@@ -186,8 +185,8 @@ class KittyClipboardEncoder {
 
   /// Start a write request
   ///
-  /// Per protocol lines 84-90:
-  ///   <OSC>5522;type=write<ST>
+/// Per protocol lines 84-90:
+///   `<OSC>5522;type=write<ST>`
   String startWrite({
     KittyClipboardLocation location = KittyClipboardLocation.clipboard,
     String? sessionId,
@@ -208,7 +207,7 @@ class KittyClipboardEncoder {
   /// Send a chunk of data for a specific MIME type
   ///
   /// Per protocol lines 85-86:
-  ///   <OSC>5522;type=wdata:mime=<base64 mime>;<base64 data><ST>
+  ///   `<OSC>5522;type=wdata:mime=<base64 mime>;<base64 data><ST>`
   String sendDataChunk({
     required String mimeType,
     required List<int> data,
@@ -228,7 +227,7 @@ class KittyClipboardEncoder {
   /// End write operation
   ///
   /// Per protocol line 90:
-  ///   <OSC>5522;type=wdata<ST>
+  ///   `<OSC>5522;type=wdata<ST>`
   String endWrite() {
     final metadata = _encodeMetadata({
       'type': KittyClipboardAction.writeData.value,
@@ -240,7 +239,7 @@ class KittyClipboardEncoder {
   /// Write alias
   ///
   /// Per protocol lines 130-139:
-  ///   <OSC>5522;type=walias;mime=<base64 target>;<base64 aliases><ST>
+  ///   `<OSC>5522;type=walias;mime=<base64 target>;<base64 aliases><ST>`
   String writeAlias({
     required String targetMimeType,
     required List<String> aliases,

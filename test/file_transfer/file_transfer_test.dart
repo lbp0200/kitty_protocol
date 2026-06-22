@@ -2,9 +2,8 @@
 ///
 /// Tests for the Kitty File Transfer Protocol encoder.
 ///
-/// Reference: doc/kitty/docs/file-transfer-protocol.rst
-library kitty_protocol_file_transfer_test;
-
+/// Reference: docs/kitty/docs/file-transfer-protocol.rst
+library;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kitty_protocol/kitty_protocol.dart';
 

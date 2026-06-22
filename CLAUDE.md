@@ -14,14 +14,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 All protocol implementations are based on the official Kitty documentation:
 
 - **Local Docs**: `docs/kitty/docs/`
-- **Keyboard Protocol**: `doc/kitty/docs/keyboard-protocol.rst`
-- **Graphics Protocol**: `doc/kitty/docs/graphics-protocol.rst`
-- **Text Sizing Protocol**: `doc/kitty/docs/text-sizing-protocol.rst`
-- **File Transfer Protocol**: `doc/kitty/docs/file-transfer-protocol.rst`
-- **Shell Integration**: `doc/kitty/docs/shell-integration.rst`
-- **Remote Control Protocol**: `doc/kitty/docs/rc_protocol.rst`
-- **Wide Gamut Colors**: `doc/kitty/docs/wide-gamut-colors.rst`
-- **Misc Protocol**: `doc/kitty/docs/misc-protocol.rst`
+- **Keyboard Protocol**: `docs/kitty/docs/keyboard-protocol.rst`
+- **Graphics Protocol**: `docs/kitty/docs/graphics-protocol.rst`
+- **Text Sizing Protocol**: `docs/kitty/docs/text-sizing-protocol.rst`
+- **File Transfer Protocol**: `docs/kitty/docs/file-transfer-protocol.rst`
+- **Shell Integration**: `docs/kitty/docs/shell-integration.rst`
+- **Remote Control Protocol**: `docs/kitty/docs/rc_protocol.rst`
+- **Wide Gamut Colors**: `docs/kitty/docs/wide-gamut-colors.rst`
+- **Misc Protocol**: `docs/kitty/docs/misc-protocol.rst`
 
 ## Commands
 
@@ -207,3 +207,4 @@ When the human partner requests a release:
 | 17 | Mouse Tracking | ✅ 100% |
 | 18 | Bracketed Paste | ✅ 100% |
 | 19 | DEC Modes | ✅ 100% |
+| 20 | Multiple Cursors | ✅ 100% |

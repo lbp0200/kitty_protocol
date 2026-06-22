@@ -1,3 +1,21 @@
+## 1.4.0
+
+- Feat: Add Multiple Cursors Protocol encoder (CSI > ... q) — new protocol #20
+- Feat: Add keyboard flags `reportAllKeys` (bit 3) and `reportText` (bit 4)
+- Feat: Add query/push/pop/set sequence generators to `KittyKeyboardEncoderFlags`
+- Fix: Rename keyboard flags to match spec (`reportEvent`→`disambiguate`, `reportAlternateKeys`→`reportEvents`, `reportAllKeysAsEscape`→`reportAlternates`)
+- Fix: Encoder event type check now uses correct flag bit (reportEvents/bit 1)
+- Fix: Remove unnecessary null assertion in underline encoder
+- Fix: Use `Object?` instead of `dynamic` in JSON encoder
+- Fix: Add type param to `is Map` check in JSON encoder
+- Chore: Clear 180+ flutter analyze info-level issues (unnecessary library names, dangling doc comments, HTML in doc comments)
+- Chore: Fix all `doc/kitty/docs/` → `docs/kitty/docs/` references (52 occurrences, 32 files)
+- Chore: Update README module structure diagram with all 18 modules
+- Chore: Upgrade `flutter_lints` to 6.0.0, `test` to 1.31.1
+- Docs: Document `deferToSystemOnComplexInput` as Flutter-specific extension
+- Test: Add 32 tests for Multiple Cursors Protocol
+- Test: Add tests for new flags (reportAllKeys=8, reportText=16)
+
 ## 1.3.1
 
 - Test: Add 138 tests across all modules (581 total), line coverage 77.8% → 97.9%

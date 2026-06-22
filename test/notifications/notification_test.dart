@@ -2,9 +2,8 @@
 ///
 /// Tests for Kitty Notification encoder (OSC 99 and OSC 777)
 ///
-/// Reference: doc/kitty/docs/desktop-notifications.rst
-library kitty_protocol_notification_test;
-
+/// Reference: docs/kitty/docs/desktop-notifications.rst
+library;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kitty_protocol/kitty_protocol.dart';
 

@@ -4,9 +4,12 @@ include: package:flutter_lints/flutter.yaml
 
 linter:
   rules:
+    - annotate_overrides
+    - avoid_print
+    - no_duplicate_case_values
     - prefer_const_constructors
+    - prefer_const_constructors_in_immutables
     - prefer_const_declarations
     - prefer_final_locals
-    - avoid_print
-    - annotate_overrides
+    - prefer_single_quotes
     - unnecessary_brace_in_string_interps

@@ -1,8 +1,7 @@
 /// Kitty Keyboard Encoder - Encodes Flutter KeyEvent to Kitty Keyboard Protocol escape sequences
 ///
-/// Reference: doc/kitty/docs/keyboard-protocol.rst
-library kitty_protocol_keyboard_encoder;
-
+/// Reference: docs/kitty/docs/keyboard-protocol.rst
+library;
 import 'package:flutter/services.dart';
 import 'kitty_key_codes.dart';
 import 'kitty_modifier_codes.dart';
@@ -10,7 +9,7 @@ import 'kitty_flags.dart';
 
 /// Event types per Kitty Keyboard Protocol
 ///
-/// Reference: doc/kitty/docs/keyboard-protocol.rst lines 217-234
+/// Reference: docs/kitty/docs/keyboard-protocol.rst lines 217-234
 enum KittyEventType {
   /// Key down event (type 1)
   keyDown(1),
@@ -58,7 +57,7 @@ enum SimpleModifier {
 /// Supports both [KeyEvent] from Flutter and [SimpleKeyEvent] for testing.
 ///
 /// Encoding format per Kitty Keyboard Protocol (line 98):
-///   CSI <unicode-key-code> ; <modifiers> u
+///   `CSI <unicode-key-code> ; <modifiers> u`
 ///
 /// Example:
 ///   Enter key: \x1b[13;1u
@@ -105,8 +104,8 @@ class KittyKeyboardEncoder {
     if (flags.isExtendedMode) {
       final csiValue = flags.toCSIValue();
 
-      // When reportEventTypes is enabled, include event_type in the sequence
-      if (flags.reportEvent) {
+      // Per spec bit 1 (reportEvents): include event_type in the sequence
+      if (flags.reportEvents) {
         // Format: \x1b[>flags;event_type;key;modifiersu
         sequence = '\x1b[>$csiValue;${event.eventType.value};$effectiveKeyCode;${modifiers}u';
       } else {

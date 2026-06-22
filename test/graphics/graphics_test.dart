@@ -2,8 +2,8 @@
 ///
 /// Tests for the Kitty Graphics Protocol encoder.
 ///
-/// Reference: doc/kitty/docs/graphics-protocol.rst
-library kitty_protocol_graphics_test;
+/// Reference: docs/kitty/docs/graphics-protocol.rst
+library;
 
 import 'dart:convert' show base64;
 import 'dart:io' show zlib;

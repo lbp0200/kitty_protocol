@@ -1,18 +1,17 @@
 /// Key codes for Kitty Keyboard Protocol
 ///
-/// Reference: doc/kitty/docs/keyboard-protocol.rst lines 585-668
-library kitty_protocol_keyboard_key_codes;
-
+/// Reference: docs/kitty/docs/keyboard-protocol.rst lines 585-668
+library;
 import 'package:flutter/services.dart';
 
 /// Key codes per Kitty Keyboard Protocol spec
 ///
 /// References:
-/// - Functional key definitions: doc/kitty/docs/keyboard-protocol.rst lines 585-668
-/// - C0 control code mapping: doc/kitty/docs/keyboard-protocol.rst lines 684-706
+/// - Functional key definitions: docs/kitty/docs/keyboard-protocol.rst lines 585-668
+/// - C0 control code mapping: docs/kitty/docs/keyboard-protocol.rst lines 684-706
 ///
 /// Encoding format (line 98):
-///   CSI <unicode-key-code> ; <modifiers> u
+///   `CSI <unicode-key-code> ; <modifiers> u`
 ///
 /// Modifier encoding (lines 192-208):
 ///   modifier = 1 + bit_flags (Shift=1, Alt=2, Ctrl=4, Super=8, Hyper=16, Meta=32)

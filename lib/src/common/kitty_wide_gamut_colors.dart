@@ -1,12 +1,10 @@
 /// Kitty Wide Gamut Colors - OKLCH and CIE LAB color formats for SGR sequences
 ///
-/// Reference: doc/kitty/docs/wide-gamut-colors.rst
+/// Reference: docs/kitty/docs/wide-gamut-colors.rst
 ///
 /// This module provides color encoders for wide gamut color spaces:
 /// - OKLCH: Perceptually uniform color space
 /// - CIE LAB: Device-independent color space
-library kitty_protocol_wide_gamut_colors;
-
 /// Color space types
 enum KittyColorSpace {
   /// sRGB (standard)

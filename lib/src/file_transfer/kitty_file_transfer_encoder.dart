@@ -1,8 +1,7 @@
 /// Kitty File Transfer Encoder - Encodes file transfer commands for Kitty File Transfer Protocol
 ///
-/// Reference: doc/kitty/docs/file-transfer-protocol.rst
-library kitty_protocol_file_transfer_encoder;
-
+/// Reference: docs/kitty/docs/file-transfer-protocol.rst
+library;
 import 'dart:convert';
 
 /// File transfer action types
@@ -84,13 +83,13 @@ enum KittyQuietLevel {
 /// It is data-agnostic and only handles protocol serialization.
 ///
 /// Escape code format (per protocol line 543-545):
-///   <OSC> 5113 ; key=value ; key=value ... <ST>
+///   `<OSC> 5113 ; key=value ; key=value ... <ST>`
 ///
 /// OSC = ESC ] (0x1b 0x5d)
 /// ST = ESC \ (0x1b 0x5c)
 ///
 /// Example:
-///   <OSC> 5113 ; ac=send ; id=session123 <ST>
+///   `<OSC> 5113 ; ac=send ; id=session123 <ST>`
 class KittyFileTransferEncoder {
   /// OSC number for file transfer protocol
   static const int fileTransferCode = 5113;
@@ -102,7 +101,7 @@ class KittyFileTransferEncoder {
 
   /// Build an escape sequence for file transfer
   ///
-  /// Format: <OSC> 5113 ; key=value ; key=value ... <ST>
+  /// Format: `<OSC> 5113 ; key=value ; key=value ... <ST>`
   String _buildSequence(Map<String, String> params) {
     final pairs = <String>[];
     params.forEach((key, value) {

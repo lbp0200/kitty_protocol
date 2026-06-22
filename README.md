@@ -27,6 +27,7 @@ This library implements **100%** of the Kitty Protocol specifications:
 | 17 | Mouse Tracking | SGR 1004/1006 | `common/` | ✅ 100% |
 | 18 | Bracketed Paste | SGR 2004 | `common/` | ✅ 100% |
 | 19 | DEC Modes | DECSC/DECRC | `common/` | ✅ 100% |
+| 20 | Multiple Cursors | CSI | `common/` | ✅ 100% |
 
 ## Why This Library?
 
@@ -153,19 +154,34 @@ flutter pub publish --server=https://pub.dartlang.org
 
 ```
 lib/
-├── kitty_protocol.dart          # Main entry point
+├── kitty_protocol.dart              # Main entry point (barrel)
 └── src/
     ├── common/
-    │   └── kitty_common.dart  # Shared constants (CSI, APC, OSC)
-    ├── keyboard/
-    │   ├── kitty_encoder.dart       # Keyboard encoder
-    │   ├── kitty_key_codes.dart     # Key code mappings
-    │   ├── kitty_flags.dart         # Protocol flags
-    │   └── kitty_modifier_codes.dart # Modifier definitions
+    │   ├── kitty_common.dart            # Shared escape constants
+    │   ├── kitty_color_stack.dart       # OSC 30001/30101
+    │   ├── kitty_hyperlinks.dart        # OSC 8 hyperlinks
+    │   ├── kitty_misc_protocol.dart     # SGR 221/222/1004/2004, DECSC/DECRC
+    │   ├── kitty_pointer_shapes.dart    # OSC 22 pointer shapes
+    │   ├── kitty_shell_integration.dart # OSC 133 shell marks
+    │   ├── kitty_underline.dart         # CSI 4:3 styled underlines
+    │   └── kitty_wide_gamut_colors.dart # OKLCH/LAB SGR colors
+    ├── clipboard/
+    │   └── kitty_clipboard_encoder.dart # OSC 52/5522 clipboard
+    ├── file_transfer/
+    │   └── kitty_file_transfer_encoder.dart # OSC 5113 file xfer
     ├── graphics/
-    │   └── kitty_graphics_encoder.dart # Graphics encoder
+    │   └── kitty_graphics_encoder.dart  # APC image protocol
+    ├── keyboard/
+    │   ├── kitty_encoder.dart           # Keyboard encoder
+    │   ├── kitty_flags.dart             # Progressive enhancement flags
+    │   ├── kitty_key_codes.dart         # Key code mappings
+    │   └── kitty_modifier_codes.dart    # Modifier bit flags
+    ├── notifications/
+    │   └── kitty_notification_encoder.dart # OSC 99/777
+    ├── remote_control/
+    │   └── kitty_remote_control_encoder.dart # DCS/JSON remote control
     └── text_sizing/
-        └── kitty_text_sizing_encoder.dart # Text sizing encoder
+        └── kitty_text_sizing_encoder.dart # OSC text sizing
 ```
 
 ## Key Codes

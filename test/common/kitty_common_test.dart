@@ -1,5 +1,3 @@
-library kitty_protocol_common_test;
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kitty_protocol/kitty_protocol.dart';
 

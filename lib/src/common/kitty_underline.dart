@@ -1,8 +1,6 @@
 /// Kitty Underline Helper - Styled and colored underlines for Kitty Protocol
 ///
-/// Reference: doc/kitty/docs/underlines.rst
-library kitty_protocol_underline;
-
+/// Reference: docs/kitty/docs/underlines.rst
 /// Underline styles per Kitty protocol
 enum KittyUnderlineStyle {
   /// No underline
@@ -112,11 +110,12 @@ class KittyUnderline {
     final sequences = <String>[];
 
     // Underline style
-    if (style != null) {
-      if (style == KittyUnderlineStyle.none) {
+    final s = style;
+    if (s != null) {
+      if (s == KittyUnderlineStyle.none) {
         sequences.add('\x1b[24m'); // Reset underline
       } else {
-        sequences.add('\x1b[4:${style!.value}m');
+        sequences.add('\x1b[4:${s.value}m');
       }
     }
 

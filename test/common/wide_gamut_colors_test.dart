@@ -2,9 +2,8 @@
 ///
 /// Tests for Kitty Wide Gamut Colors encoder (OKLCH, LAB)
 ///
-/// Reference: doc/kitty/docs/wide-gamut-colors.rst
-library kitty_protocol_wide_gamut_colors_test;
-
+/// Reference: docs/kitty/docs/wide-gamut-colors.rst
+library;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kitty_protocol/kitty_protocol.dart';
 

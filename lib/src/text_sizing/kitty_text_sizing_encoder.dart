@@ -1,8 +1,6 @@
 /// Kitty Text Sizing Encoder - Encodes text sizing commands for Kitty Text Sizing Protocol
 ///
-/// Reference: doc/kitty/docs/text-sizing-protocol.rst
-library kitty_protocol_text_sizing_encoder;
-
+/// Reference: docs/kitty/docs/text-sizing-protocol.rst
 /// Text sizing scale (1-7)
 class KittyTextScale {
   /// Scale factor 1 (default)
@@ -49,13 +47,13 @@ enum KittyHorizontalAlignment {
 
 /// Text sizing encoder for Kitty Protocol
 ///
-/// Reference: doc/kitty/docs/text-sizing-protocol.rst
+/// Reference: docs/kitty/docs/text-sizing-protocol.rst
 ///
 /// The text sizing protocol allows text to be displayed in different sizes
 /// in the terminal. It uses OSC escape codes.
 ///
 /// Escape code format:
-///   <OSC> _text_size_code ; metadata ; text <terminator>
+///   `<OSC> _text_size_code ; metadata ; text <terminator>`
 ///
 /// OSC = ESC ] (0x1b 0x5d)
 /// Terminator = BEL (0x07) or ESC ST (0x1b 0x5c)
@@ -79,7 +77,7 @@ class KittyTextSizingEncoder {
 
   /// Build a text sizing escape sequence
   ///
-  /// Format: <OSC> _text_size_code ; metadata ; text <terminator>
+  /// Format: `<OSC> _text_size_code ; metadata ; text <terminator>`
   /// Example: \x1b]_text_size_code;s=2;Double sized text\x07
   String encode({
     required String text,

@@ -1,11 +1,9 @@
 /// Kitty Hyperlinks - OSC 8 hyperlinks for Kitty Protocol
 ///
-/// Reference: doc/kitty/docs/integrations.rst (OSC 8)
+/// Reference: docs/kitty/docs/integrations.rst (OSC 8)
 ///
 /// Format:
 ///   \x1b]8;;URL\x1b\Display Text\x1b]8;;\x1b\
-library kitty_protocol_hyperlinks;
-
 /// Hyperlink encoder
 ///
 /// Per OSC 8 protocol:

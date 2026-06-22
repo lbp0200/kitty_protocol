@@ -1,13 +1,11 @@
 /// Kitty Misc Protocol Extensions - Additional escape sequences
 ///
-/// Reference: doc/kitty/docs/misc-protocol.rst
+/// Reference: docs/kitty/docs/misc-protocol.rst
 ///
 /// Contains:
 /// - Screen to scrollback (\x1b[22J)
 /// - Independent bold/faint reset (SGR 221/222)
 /// - Focus reporting (SGR 1004)
-library kitty_protocol_misc;
-
 /// SGR (Select Graphic Rendition) codes for text styling
 class KittySgrCodes {
   KittySgrCodes._();

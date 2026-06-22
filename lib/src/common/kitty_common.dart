@@ -6,7 +6,7 @@
 /// - keyboard-protocol.rst (CSI sequences)
 /// - graphics-protocol.rst (APC sequences)
 /// - text-sizing-protocol.rst (OSC sequences)
-library kitty_protocol_common;
+library;
 
 /// Escape sequence constants
 ///

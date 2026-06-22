@@ -2,9 +2,8 @@
 ///
 /// Tests for Kitty Misc Protocol encoder
 ///
-/// Reference: doc/kitty/docs/misc-protocol.rst
-library kitty_protocol_misc_test;
-
+/// Reference: docs/kitty/docs/misc-protocol.rst
+library;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kitty_protocol/kitty_protocol.dart';
 

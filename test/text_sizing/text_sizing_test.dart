@@ -2,9 +2,8 @@
 ///
 /// Tests for Kitty Text Sizing encoder
 ///
-/// Reference: doc/kitty/docs/text-sizing-protocol.rst
-library kitty_protocol_text_sizing_test;
-
+/// Reference: docs/kitty/docs/text-sizing-protocol.rst
+library;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kitty_protocol/kitty_protocol.dart';
 

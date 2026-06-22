@@ -2,9 +2,8 @@
 ///
 /// Tests for Kitty Clipboard encoder (OSC 52 and OSC 5522)
 ///
-/// Reference: doc/kitty/docs/clipboard.rst
-library kitty_protocol_clipboard_test;
-
+/// Reference: docs/kitty/docs/clipboard.rst
+library;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kitty_protocol/kitty_protocol.dart';
 

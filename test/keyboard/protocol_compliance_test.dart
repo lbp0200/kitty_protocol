@@ -5,7 +5,7 @@ import 'package:kitty_protocol/kitty_protocol.dart';
 /// Protocol Compliance Tests
 ///
 /// These tests verify compliance with the Kitty Keyboard Protocol specification
-/// Reference: doc/kitty/docs/keyboard-protocol.rst
+/// Reference: docs/kitty/docs/keyboard-protocol.rst
 ///
 /// Test categories:
 /// 1. Basic key encoding (lines 98-99)
@@ -314,7 +314,7 @@ void main() {
 
     test('Key down event type 1 in extended mode', () {
       const encoder = KittyKeyboardEncoder(
-        flags: KittyKeyboardEncoderFlags(reportEvent: true),
+        flags: KittyKeyboardEncoderFlags(reportEvents: true),
       );
       const event = SimpleKeyEvent(
         logicalKey: LogicalKeyboardKey.enter,
@@ -323,13 +323,13 @@ void main() {
       );
       final result = encoder.encode(event);
       // Format: CSI >flags ; event_type ; key ; modifiers u
-      // event_type 1 = keyDown
-      expect(result, equals('\x1b[>1;1;13;1u'));
+      // reportEvents=2, event_type 1 = keyDown
+      expect(result, equals('\x1b[>2;1;13;1u'));
     });
 
     test('Key repeat event type 2 in extended mode', () {
       const encoder = KittyKeyboardEncoder(
-        flags: KittyKeyboardEncoderFlags(reportEvent: true),
+        flags: KittyKeyboardEncoderFlags(reportEvents: true),
       );
       const event = SimpleKeyEvent(
         logicalKey: LogicalKeyboardKey.enter,
@@ -337,21 +337,21 @@ void main() {
         isKeyRepeat: true,
       );
       final result = encoder.encode(event);
-      // event_type 2 = keyRepeat
-      expect(result, equals('\x1b[>1;2;13;1u'));
+      // reportEvents=2, event_type 2 = keyRepeat
+      expect(result, equals('\x1b[>2;2;13;1u'));
     });
 
     test('Key up event type 3 in extended mode', () {
       const encoder = KittyKeyboardEncoder(
-        flags: KittyKeyboardEncoderFlags(reportEvent: true),
+        flags: KittyKeyboardEncoderFlags(reportEvents: true),
       );
       const event = SimpleKeyEvent(
         logicalKey: LogicalKeyboardKey.enter,
         isKeyUp: true,
       );
       final result = encoder.encode(event);
-      // event_type 3 = keyUp
-      expect(result, equals('\x1b[>1;3;13;1u'));
+      // reportEvents=2, event_type 3 = keyUp
+      expect(result, equals('\x1b[>2;3;13;1u'));
     });
   });
 
@@ -361,7 +361,7 @@ void main() {
 
     test('Extended mode uses CSI > format', () {
       const encoder = KittyKeyboardEncoder(
-        flags: KittyKeyboardEncoderFlags(reportEvent: true),
+        flags: KittyKeyboardEncoderFlags(disambiguate: true),
       );
       const event = SimpleKeyEvent(logicalKey: LogicalKeyboardKey.enter);
       final result = encoder.encode(event);
@@ -370,13 +370,13 @@ void main() {
 
     test('CSI value includes flags', () {
       const encoder = KittyKeyboardEncoder(
-        flags: KittyKeyboardEncoderFlags(reportEvent: true),
+        flags: KittyKeyboardEncoderFlags(disambiguate: true),
       );
       const event = SimpleKeyEvent(logicalKey: LogicalKeyboardKey.enter);
       final result = encoder.encode(event);
-      // reportEvent = 0b10 = 2, but it's stored as the raw flag value
+      // disambiguate has bit 0, so toCSIValue = 1
       // The format is: CSI > flag_value ; ...
-      expect(result, contains('>1;')); // reportEvent=1 in toCSIValue
+      expect(result, contains('>1;'));
     });
   });
 

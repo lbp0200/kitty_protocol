@@ -2,9 +2,8 @@
 ///
 /// Tests for Kitty Shell Integration encoder (OSC 133)
 ///
-/// Reference: doc/kitty/docs/shell-integration.rst
-library kitty_protocol_shell_integration_test;
-
+/// Reference: docs/kitty/docs/shell-integration.rst
+library;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kitty_protocol/kitty_protocol.dart';
 

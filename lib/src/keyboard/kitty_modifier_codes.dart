@@ -1,8 +1,6 @@
 /// Modifier codes for Kitty Keyboard Protocol
 ///
-/// Reference: doc/kitty/docs/keyboard-protocol.rst lines 192-208
-library kitty_protocol_keyboard_modifier_codes;
-
+/// Reference: docs/kitty/docs/keyboard-protocol.rst lines 192-208
 /// Modifier bit flags
 class KittyModifierCodes {
   /// Shift modifier bit

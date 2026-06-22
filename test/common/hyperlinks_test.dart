@@ -2,9 +2,8 @@
 ///
 /// Tests for Kitty Hyperlinks encoder (OSC 8)
 ///
-/// Reference: doc/kitty/docs/integrations.rst
-library kitty_protocol_hyperlinks_test;
-
+/// Reference: docs/kitty/docs/integrations.rst
+library;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kitty_protocol/kitty_protocol.dart';
 

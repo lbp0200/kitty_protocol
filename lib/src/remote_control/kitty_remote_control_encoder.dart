@@ -1,17 +1,15 @@
 /// Kitty Remote Control Encoder - Remote control for Kitty Protocol
 ///
-/// Reference: doc/kitty/docs/rc_protocol.rst
-library kitty_protocol_remote_control_encoder;
-
+/// Reference: docs/kitty/docs/rc_protocol.rst
 /// Remote control encoder
 ///
 /// Per protocol lines 8-20:
 ///
 /// Format:
-///   <ESC>P@kitty-cmd<JSON object><ESC>\
+///   `<ESC>P@kitty-cmd<JSON object><ESC>`
 ///
 /// Example:
-///   <ESC>P@kitty-cmd{"cmd":"ls","version":[0,14,2]}<ESC>\
+///   `<ESC>P@kitty-cmd{"cmd":"ls","version":[0,14,2]}<ESC>`
 class KittyRemoteControlEncoder {
   /// DCS code for kitty remote control
   static const String dcsPrefix = '\x1bP@kitty-cmd';
@@ -54,7 +52,7 @@ class KittyRemoteControlEncoder {
   }
 
   /// Simple JSON encoder (for basic types)
-  String _encodeJson(dynamic value) {
+  String _encodeJson(Object? value) {
     if (value == null) return 'null';
     if (value is bool) return value.toString();
     if (value is num) return value.toString();
@@ -62,7 +60,7 @@ class KittyRemoteControlEncoder {
     if (value is List) {
       return '[${value.map(_encodeJson).join(',')}]';
     }
-    if (value is Map) {
+    if (value is Map<String, dynamic>) {
       final entries = value.entries.map((e) => '"${e.key}":${_encodeJson(e.value)}');
       return '{${entries.join(',')}}';
     }

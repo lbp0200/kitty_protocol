@@ -1,8 +1,7 @@
 /// Kitty Graphics Encoder - Encodes image data to Kitty Graphics Protocol escape sequences
 ///
-/// Reference: doc/kitty/docs/graphics-protocol.rst
-library kitty_protocol_graphics_encoder;
-
+/// Reference: docs/kitty/docs/graphics-protocol.rst
+library;
 import 'dart:io' show zlib;
 
 /// Image format types
@@ -137,10 +136,10 @@ enum KittyGraphicsLayer {
 /// - Delete operations
 /// - Unicode placeholder support
 ///
-/// Reference: doc/kitty/docs/graphics-protocol.rst
+/// Reference: docs/kitty/docs/graphics-protocol.rst
 ///
 /// Example escape code format:
-///   <ESC>_G<control data>;<payload><ESC>\
+///   `<ESC>_G<control data>;<payload><ESC>`
 ///
 /// Control data is comma-separated key=value pairs:
 ///   - f: format (32=RGBA, 24=RGB, 100=PNG)
@@ -166,7 +165,7 @@ class KittyGraphicsEncoder {
 
   /// Build a graphics escape sequence
   ///
-  /// Format: <ESC>_G<control data>;<payload><ESC>\
+  /// Format: `<ESC>_G<control data>;<payload><ESC>`
   String buildSequence({
     required String controlData,
     required String payload,
@@ -213,7 +212,7 @@ class KittyGraphicsEncoder {
   /// Create a simple PNG transmission sequence
   ///
   /// Per protocol line 292:
-  ///   <ESC>_Gf=100;<payload><ESC>\
+  ///   `<ESC>_Gf=100;<payload><ESC>`
   String encodePng(List<int> pngData, {int? imageId}) {
     final params = <String, dynamic>{
       'f': 100,
@@ -227,7 +226,7 @@ class KittyGraphicsEncoder {
   /// Create a RGBA image transmission sequence
   ///
   /// Per protocol line 281:
-  ///   <ESC>_Gf=32,s=10,v=20;<payload><ESC>\
+  ///   `<ESC>_Gf=32,s=10,v=20;<payload><ESC>`
   String encodeRgba({
     required int width,
     required int height,
@@ -270,7 +269,7 @@ class KittyGraphicsEncoder {
   /// Create a delete command
   ///
   /// Per protocol line 782-786:
-  ///   <ESC>_Ga=d<ESC>\
+  ///   `<ESC>_Ga=d<ESC>`
   String deleteAll() {
     return buildSequence(controlData: 'a=d', payload: '');
   }
@@ -289,7 +288,7 @@ class KittyGraphicsEncoder {
   /// Delete all images in cell range
   ///
   /// Per graphics-protocol.rst (region delete extension):
-  ///   <ESC>_Ga=d,d=r,x=3,y=4,X=10,Y=20<ESC>\
+  ///   `<ESC>_Ga=d,d=r,x=3,y=4,X=10,Y=20<ESC>`
   String deleteInRegion(int startX, int startY, int endX, int endY) {
     final params = <String, dynamic>{
       'a': 'd',
@@ -305,7 +304,7 @@ class KittyGraphicsEncoder {
   /// Delete by z-index
   ///
   /// Per graphics-protocol.rst line 785:
-  ///   <ESC>_Ga=d,d=Z,z=-1<ESC>\
+  ///   `<ESC>_Ga=d,d=Z,z=-1<ESC>`
   String deleteByZIndex(int zIndex) {
     final params = <String, dynamic>{
       'a': 'd',
@@ -318,7 +317,7 @@ class KittyGraphicsEncoder {
   /// Delete by cell position
   ///
   /// Per graphics-protocol.rst line 786:
-  ///   <ESC>_Ga=d,d=p,x=3,y=4<ESC>\
+  ///   `<ESC>_Ga=d,d=p,x=3,y=4<ESC>`
   String deleteAtPosition(int x, int y) {
     final params = <String, dynamic>{
       'a': 'd',
@@ -396,7 +395,7 @@ class KittyGraphicsEncoder {
   /// Create a placement command
   ///
   /// Per protocol lines 457-459:
-  ///   <ESC>_Ga=p,i=10<ESC>\
+  ///   `<ESC>_Ga=p,i=10<ESC>`
   String placeImage({
     required int imageId,
     int? placementId,
@@ -424,7 +423,7 @@ class KittyGraphicsEncoder {
   /// Transmit and display image in one command
   ///
   /// Per protocol line 457:
-  ///   <ESC>_Ga=T,f=100,<payload><ESC>\
+  ///   `<ESC>_Ga=T,f=100,<payload><ESC>`
   String transmitAndDisplay({
     required int imageId,
     int? columns,
@@ -468,7 +467,7 @@ class KittyGraphicsEncoder {
   /// Transmit frame data for animation
   ///
   /// Per graphics-protocol.rst line 852-872:
-  ///   <ESC>_Ga=f,i=<image_id>,I=<frame_number>;<payload><ESC>\
+  ///   `<ESC>_Ga=f,i=<image_id>,I=<frame_number>;<payload><ESC>`
   String transmitFrame({
     required int imageId,
     required int frameNumber,
@@ -519,7 +518,7 @@ class KittyGraphicsEncoder {
   /// Create animation from existing frames
   ///
   /// Per graphics-protocol.rst line 917-924:
-  ///   <ESC>_Ga=a,i=3,c=7<ESC>\
+  ///   `<ESC>_Ga=a,i=3,c=7<ESC>`
   String animationCreate({
     required int imageId,
     required int frameCount,
@@ -539,7 +538,7 @@ class KittyGraphicsEncoder {
   /// Play animation
   ///
   /// Per graphics-protocol.rst line 924:
-  ///   <ESC>_Ga=a,i=7,r=3,z=48<ESC>\
+  ///   `<ESC>_Ga=a,i=7,r=3,z=48<ESC>`
   String animationPlay({
     required int imageId,
     required int fromFrame,
@@ -588,7 +587,7 @@ class KittyGraphicsEncoder {
   /// Create composition (frame overlay)
   ///
   /// Per graphics-protocol.rst line 973-983:
-  ///   <ESC>_Ga=c,i=1,r=7,c=9,w=23,h=27,X=4,Y=8,x=1,y=3<ESC>\
+  ///   `<ESC>_Ga=c,i=1,r=7,c=9,w=23,h=27,X=4,Y=8,x=1,y=3<ESC>`
   String compositionCreate({
     required int sourceImageId,
     required int destImageId,

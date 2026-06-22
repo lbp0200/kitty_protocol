@@ -1,8 +1,7 @@
 /// Kitty Notification Encoder - Desktop notifications for Kitty Protocol
 ///
-/// Reference: doc/kitty/docs/desktop-notifications.rst
-library kitty_protocol_notification_encoder;
-
+/// Reference: docs/kitty/docs/desktop-notifications.rst
+library;
 import 'dart:convert';
 
 /// Notification payload types
@@ -90,7 +89,7 @@ class KittyNotificationIcons {
 /// Implements OSC 99 for desktop notifications.
 ///
 /// Format:
-///   <OSC>99;metadata;payload<ST>
+///   `<OSC>99;metadata;payload<ST>`
 ///
 /// Example:
 ///   printf '\x1b]99;i=1:d=0;Hello world\x1b\\'
@@ -132,8 +131,8 @@ class KittyNotificationEncoder {
 
   /// Send a simple notification
   ///
-  /// Per protocol line 31:
-  ///   printf '\x1b]99;;Hello world\x1b\\'
+/// Per protocol line 31:
+///   `printf '\x1b]99;;Hello world\x1b\\'`
   String sendSimple(String message) {
     return _buildSequence(metadata: '', payload: message);
   }
@@ -141,8 +140,8 @@ class KittyNotificationEncoder {
   /// Send notification with title and body
   ///
   /// Per protocol lines 33-36:
-  ///   printf '\x1b]99;i=1:d=0;Hello world\x1b\\'
-  ///   printf '\x1b]99;i=1:p=body;This is cool\x1b\\'
+  ///   `printf '\x1b]99;i=1:d=0;Hello world\x1b\\'`
+  ///   `printf '\x1b]99;i=1:p=body;This is cool\x1b\\'`
   String send({
     String? id,
     String? title,
@@ -194,7 +193,7 @@ class KittyNotificationEncoder {
   /// Close a notification
   ///
   /// Per protocol lines 192-198:
-  ///   <OSC> i=<notification id> : p=close ; <terminator>
+  ///   `<OSC> i=<notification id> : p=close ; <terminator>`
   String close(String? notificationId) {
     return _buildSequence(
       metadata: _encodeMetadata({
@@ -207,7 +206,7 @@ class KittyNotificationEncoder {
   /// Query for support
   ///
   /// Per protocol lines 376-384:
-  ///   <OSC> 99 ; i=<id> : p=? ; <terminator>
+  ///   `<OSC> 99 ; i=<id> : p=? ; <terminator>`
   String querySupport({String? sessionId}) {
     return _buildSequence(
       metadata: _encodeMetadata({
@@ -220,7 +219,7 @@ class KittyNotificationEncoder {
   /// Query alive notifications
   ///
   /// Per protocol lines 163-172:
-  ///   <OSC> 99 ; i=myid : p=alive ; <terminator>
+  ///   `<OSC> 99 ; i=myid : p=alive ; <terminator>`
   String queryAlive({String? sessionId}) {
     return _buildSequence(
       metadata: _encodeMetadata({
@@ -274,7 +273,7 @@ class KittyNotificationEncoder {
 /// Per changelog.rst line 2251:
 /// Some terminals (like urxvt) use OSC 777 for notifications
 ///
-/// Format: <OSC>777;<command>;<args><ST>
+/// Format: `<OSC>777;<command>;<args><ST>`
 class KittyNotification777 {
   KittyNotification777._();
 
